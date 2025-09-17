@@ -1,7 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
+import { CodePost } from '@/types';
+import { getTrendingPosts, getLatestPosts, searchPosts } from '@/lib/api';
+import { convertToCodePosts } from '@/lib/utils';
+import { ThemeToggle } from './components/ThemeToggle';
 
 // アイコンコンポーネントを直接定義（lucide-react代替）
 const SearchIcon = () => (
@@ -88,316 +93,6 @@ const TagIcon = ({ size = 8 }: { size?: number }) => (
   </svg>
 );
 
-// 型定義
-interface Author {
-  name: string;
-  avatar: string;
-}
-
-interface CodePost {
-  id: string;
-  title: string;
-  author: Author;
-  tags: string[];
-  likes: number;
-  isBookmarked: boolean;
-  codePreview: string;
-  createdAt: string;
-}
-
-// ダミーデータ
-const trendingCodes: CodePost[] = [
-  {
-    id: '1',
-    title: 'React カスタムフック useLocalStorage',
-    author: {
-      name: 'yamada_taro',
-      avatar:
-        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face',
-    },
-    tags: ['React', 'TypeScript', 'hooks'],
-    likes: 42,
-    isBookmarked: false,
-    codePreview: `const useLocalStorage = (key, initialValue) => {
-  const [storedValue, setStoredValue] = useState(() => {
-    try {
-      const item = window.localStorage.getItem(key);
-      return item ? JSON.parse(item) : initialValue;
-    } catch (error) {
-      return initialValue;
-    }
-  });
-  
-  const setValue = (value) => {
-    try {
-      setStoredValue(value);
-      window.localStorage.setItem(key, JSON.stringify(value));
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  
-  return [storedValue, setValue];
-};`,
-    createdAt: '2024-01-15',
-  },
-  {
-    id: '2',
-    title: 'Python 非同期処理でAPI呼び出し最適化',
-    author: {
-      name: 'python_master',
-      avatar:
-        'https://images.unsplash.com/photo-1494790108755-2616b612b5a1?w=40&h=40&fit=crop&crop=face',
-    },
-    tags: ['Python', 'asyncio', 'API'],
-    likes: 89,
-    isBookmarked: true,
-    codePreview: `import asyncio
-import aiohttp
-
-async def fetch_data(session, url):
-    async with session.get(url) as response:
-        return await response.json()
-
-async def main():
-    urls = ['http://api1.com', 'http://api2.com']
-    async with aiohttp.ClientSession() as session:
-        tasks = [fetch_data(session, url) for url in urls]
-        results = await asyncio.gather(*tasks)
-    return results`,
-    createdAt: '2024-01-14',
-  },
-  {
-    id: '3',
-    title: 'CSS Grid レスポンシブレイアウト',
-    author: {
-      name: 'css_wizard',
-      avatar:
-        'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=40&h=40&fit=crop&crop=face',
-    },
-    tags: ['CSS', 'Grid', 'Responsive'],
-    likes: 67,
-    isBookmarked: false,
-    codePreview: `.container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1rem;
-  padding: 1rem;
-}
-
-.item {
-  background: white;
-  border-radius: 8px;
-  padding: 1rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-@media (max-width: 768px) {
-  .container {
-    grid-template-columns: 1fr;
-  }
-}`,
-    createdAt: '2024-01-13',
-  },
-  {
-    id: '4',
-    title: 'Node.js Express ミドルウェア設計',
-    author: {
-      name: 'node_expert',
-      avatar:
-        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face',
-    },
-    tags: ['Node.js', 'Express'],
-    likes: 73,
-    isBookmarked: false,
-    codePreview: `const authenticate = (req, res, next) => {
-  const token = req.header('Authorization');
-  
-  if (!token) {
-    return res.status(401).json({ error: 'No token provided' });
-  }
-  
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    next();
-  } catch (error) {
-    res.status(401).json({ error: 'Invalid token' });
-  }
-};`,
-    createdAt: '2024-01-12',
-  },
-  {
-    id: '5',
-    title: 'TypeScript 型安全なAPI クライアント',
-    author: {
-      name: 'ts_developer',
-      avatar:
-        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face',
-    },
-    tags: ['TypeScript', 'API'],
-    likes: 91,
-    isBookmarked: true,
-    codePreview: `interface ApiResponse<T> {
-  data: T;
-  status: number;
-  message: string;
-}
-
-class ApiClient {
-  private baseUrl: string;
-  
-  constructor(baseUrl: string) {
-    this.baseUrl = baseUrl;
-  }
-  
-  async get<T>(endpoint: string): Promise<ApiResponse<T>> {
-    const response = await fetch(\`\${this.baseUrl}\${endpoint}\`);
-    return response.json();
-  }
-}`,
-    createdAt: '2024-01-11',
-  },
-  {
-    id: '6',
-    title: 'JavaScript モジュール設計パターン',
-    author: {
-      name: 'js_creator',
-      avatar:
-        'https://images.unsplash.com/photo-1494790108755-2616b612b5a1?w=40&h=40&fit=crop&crop=face',
-    },
-    tags: ['JavaScript', 'Module'],
-    likes: 56,
-    isBookmarked: false,
-    codePreview: `// Counter module with closure
-function createCounter(initialValue = 0) {
-  let count = initialValue;
-  
-  return {
-    get value() {
-      return count;
-    },
-    get doubled() {
-      return count * 2;
-    },
-    increment() {
-      count++;
-    },
-    decrement() {
-      count--;
-    }
-  };
-}
-
-const counter = createCounter(5);`,
-    createdAt: '2024-01-10',
-  },
-];
-
-const newCodes: CodePost[] = [
-  {
-    id: '7',
-    title: 'JavaScript ストア管理パターン',
-    author: {
-      name: 'js_store_fan',
-      avatar:
-        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face',
-    },
-    tags: ['JavaScript', 'Store', 'Pattern'],
-    likes: 34,
-    isBookmarked: false,
-    codePreview: `// Simple store implementation
-function createStore(initialValue) {
-  let value = initialValue;
-  const subscribers = new Set();
-  
-  return {
-    get value() { return value; },
-    set(newValue) {
-      value = newValue;
-      subscribers.forEach(fn => fn(value));
-    },
-    subscribe(fn) {
-      subscribers.add(fn);
-      return () => subscribers.delete(fn);
-    },
-    update(fn) {
-      this.set(fn(value));
-    }
-  };
-}
-
-const count = createStore(0);`,
-    createdAt: '2024-01-16',
-  },
-  {
-    id: '8',
-    title: 'Go 並行処理ワーカープール',
-    author: {
-      name: 'go_master',
-      avatar:
-        'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=40&h=40&fit=crop&crop=face',
-    },
-    tags: ['Go', 'Concurrency'],
-    likes: 67,
-    isBookmarked: false,
-    codePreview: `package main
-
-import (
-    "fmt"
-    "sync"
-)
-
-func worker(id int, jobs <-chan int, results chan<- int) {
-    for j := range jobs {
-        fmt.Printf("worker %d processing job %d\\n", id, j)
-        results <- j * 2
-    }
-}
-
-func main() {
-    jobs := make(chan int, 100)
-    results := make(chan int, 100)
-    
-    for w := 1; w <= 3; w++ {
-        go worker(w, jobs, results)
-    }
-}`,
-    createdAt: '2024-01-16',
-  },
-  {
-    id: '9',
-    title: 'Rust 所有権システム活用法',
-    author: {
-      name: 'rust_expert',
-      avatar:
-        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face',
-    },
-    tags: ['Rust', 'Ownership'],
-    likes: 89,
-    isBookmarked: true,
-    codePreview: `struct Person {
-    name: String,
-    age: u32,
-}
-
-impl Person {
-    fn new(name: String, age: u32) -> Self {
-        Person { name, age }
-    }
-    
-    fn greet(&self) -> String {
-        format!("Hello, my name is {} and I'm {} years old", 
-                self.name, self.age)
-    }
-    
-    fn have_birthday(&mut self) {
-        self.age += 1;
-    }
-}`,
-    createdAt: '2024-01-16',
-  },
-];
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState('ホーム');
@@ -405,12 +100,64 @@ export default function HomePage() {
   const [selectedFilter, setSelectedFilter] = useState('すべて');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [bookmarkedPosts, setBookmarkedPosts] = useState(new Set<string>());
+  const [trendingCodes, setTrendingCodes] = useState<CodePost[]>([]);
+  const [newCodes, setNewCodes] = useState<CodePost[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [trendingPosts, latestPosts] = await Promise.all([
+          getTrendingPosts(6),
+          getLatestPosts(6)
+        ]);
+
+        const [trendingCodePosts, latestCodePosts] = await Promise.all([
+          convertToCodePosts(trendingPosts),
+          convertToCodePosts(latestPosts)
+        ]);
+
+        setTrendingCodes(trendingCodePosts);
+        setNewCodes(latestCodePosts);
+      } catch (error) {
+        console.error('Failed to load data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  useEffect(() => {
+    const performSearch = async () => {
+      if (!searchQuery.trim()) {
+        const [trendingPosts, latestPosts] = await Promise.all([
+          getTrendingPosts(6),
+          getLatestPosts(6)
+        ]);
+        const [trendingCodePosts, latestCodePosts] = await Promise.all([
+          convertToCodePosts(trendingPosts),
+          convertToCodePosts(latestPosts)
+        ]);
+        setTrendingCodes(trendingCodePosts);
+        setNewCodes(latestCodePosts);
+      } else {
+        const searchResults = await searchPosts(searchQuery);
+        const searchCodePosts = await convertToCodePosts(searchResults);
+        setTrendingCodes(searchCodePosts.slice(0, 6));
+        setNewCodes(searchCodePosts.slice(6, 12));
+      }
+    };
+
+    const debounceTimer = setTimeout(performSearch, 300);
+    return () => clearTimeout(debounceTimer);
+  }, [searchQuery]);
 
   const tabItems = [
-    { id: 'ホーム', label: 'ホーム' },
-    { id: 'カテゴリー', label: 'カテゴリー' },
-    { id: 'ブックマーク', label: 'ブックマーク' },
-    { id: 'ランキング', label: 'ランキング' },
+    { id: 'ホーム', label: 'ホーム', color: 'blue' },
+    { id: 'ブックマーク', label: 'ブックマーク', color: 'purple' },
+    { id: 'ランキング', label: 'ランキング', color: 'red' },
   ];
 
   const filterOptions = ['すべて', 'フォロー中ユーザ', 'フォロー中タグ'];
@@ -436,9 +183,12 @@ export default function HomePage() {
     showLikes?: boolean;
     showBookmark?: boolean;
   }) => (
-    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200 aspect-square flex flex-col">
+    <Link
+      href={`/posts/${post.id}`}
+      className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md dark:hover:shadow-gray-900/20 transition-shadow duration-200 aspect-square flex flex-col cursor-pointer"
+    >
       {/* 投稿者アイコン */}
-      <div className="p-4 border-b border-gray-100">
+      <div className="p-4 border-b border-gray-100 dark:border-gray-700">
         <div className="flex items-center">
           <Image
             src={post.author.avatar}
@@ -448,7 +198,7 @@ export default function HomePage() {
             className="rounded-full mr-3"
             unoptimized
           />
-          <span className="text-sm font-medium text-gray-900">
+          <span className="text-sm font-medium text-gray-900 dark:text-white">
             {post.author.name}
           </span>
         </div>
@@ -456,15 +206,15 @@ export default function HomePage() {
 
       {/* 投稿タイトル */}
       <div className="px-4 py-2">
-        <h3 className="font-semibold text-gray-900 text-sm line-clamp-2 leading-tight">
+        <h3 className="font-semibold text-gray-900 dark:text-white text-sm line-clamp-2 leading-tight">
           {post.title}
         </h3>
       </div>
 
       {/* ソースコードプレビュー */}
       <div className="flex-1 px-4 pb-2">
-        <div className="bg-gray-900 rounded-lg p-3 h-full overflow-hidden">
-          <pre className="text-xs text-gray-300 font-mono leading-tight overflow-hidden">
+        <div className="bg-gray-900 dark:bg-gray-950 rounded-lg p-3 h-full overflow-hidden">
+          <pre className="text-xs text-gray-300 dark:text-gray-400 font-mono leading-tight overflow-hidden">
             <code className="whitespace-pre-wrap">
               {post.codePreview.split('\n').slice(0, 8).join('\n')}
               {post.codePreview.split('\n').length > 8 && '...'}
@@ -479,7 +229,7 @@ export default function HomePage() {
           {post.tags.slice(0, 3).map((tag: string, index: number) => (
             <span
               key={index}
-              className="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs"
+              className="inline-flex items-center px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-xs"
             >
               <TagIcon size={8} />
               <span className="ml-1">{tag}</span>
@@ -489,10 +239,10 @@ export default function HomePage() {
       </div>
 
       {/* いいね数・ブックマークボタン */}
-      <div className="px-4 py-3 border-t border-gray-100">
+      <div className="px-4 py-3 border-t border-gray-100 dark:border-gray-700">
         <div className="flex items-center justify-between">
           {showLikes && (
-            <div className="flex items-center space-x-1 text-gray-500">
+            <div className="flex items-center space-x-1 text-gray-500 dark:text-gray-400">
               <HeartIcon size={16} />
               <span className="text-sm font-medium">{post.likes}</span>
             </div>
@@ -501,8 +251,8 @@ export default function HomePage() {
             <button
               className={`flex items-center space-x-1 transition-colors ${
                 bookmarkedPosts.has(post.id) || post.isBookmarked
-                  ? 'text-gray-700'
-                  : 'text-gray-400 hover:text-gray-600'
+                  ? 'text-gray-700 dark:text-gray-300'
+                  : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400'
               }`}
               onClick={() => toggleBookmark(post.id)}
             >
@@ -518,19 +268,35 @@ export default function HomePage() {
           )}
         </div>
       </div>
-    </div>
+    </Link>
   );
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-900">
       {/* ヘッダー */}
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* 左側: アイコンロゴ */}
             <div className="flex items-center">
               <div className="w-10 h-10 mr-3">
-                <svg viewBox="0 0 100 100" className="w-full h-full">
+                {/* 任意の正方形画像を設置可能 */}
+                <Image
+                  src="/logo.png" // public/logo.png に任意の正方形画像を配置
+                  alt="CodeBook Logo"
+                  width={40}
+                  height={40}
+                  className="w-full h-full object-cover rounded"
+                  unoptimized
+                  onError={(e) => {
+                    // 画像が見つからない場合はデフォルトのSVGアイコンを表示
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    target.nextElementSibling?.classList.remove('hidden');
+                  }}
+                />
+                {/* フォールバック用SVGアイコン */}
+                <svg viewBox="0 0 100 100" className="w-full h-full hidden">
                   <defs>
                     <style>
                       {`.st0{fill:#000000;} .st1{fill:#FFFFFF;} .st2{fill:none;stroke:#000000;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;}`}
@@ -563,34 +329,45 @@ export default function HomePage() {
                   />
                 </svg>
               </div>
-              <span className="font-bold text-xl text-gray-900">CodeBook</span>
+              <span className="font-bold text-xl text-gray-900 dark:text-white">CodeBook</span>
             </div>
 
-            {/* 右側: 検索・プロフィール・投稿ボタン */}
+            {/* 右側: ArtCodeメニュー・検索・プロフィール・投稿ボタン */}
             <div className="flex items-center space-x-4">
+              {/* ArtCodeメニューボタン */}
+              <button className="flex items-center space-x-2 px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+                <span className="font-medium text-sm">ArtCode</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M6 9l6 6 6-6"/>
+                </svg>
+              </button>
+
               {/* 検索フォーム */}
               <div className="relative">
-                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500">
                   <SearchIcon />
                 </div>
                 <input
                   type="text"
                   placeholder="キーワード検索..."
-                  className="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-sm"
+                  className="w-64 pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
 
+              {/* テーマ切り替えボタン */}
+              <ThemeToggle />
+
               {/* プロフィール */}
               {isLoggedIn ? (
-                <button className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors">
+                <button className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
                   <UserIcon size={20} />
                   <span className="text-sm font-medium">プロフィール</span>
                 </button>
               ) : (
                 <button
-                  className="text-gray-600 hover:text-gray-900 font-medium"
+                  className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium"
                   onClick={() => setIsLoggedIn(true)}
                 >
                   ログイン
@@ -598,41 +375,50 @@ export default function HomePage() {
               )}
 
               {/* 投稿ボタン */}
-              <button className="bg-gray-800 text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-700 transition-colors">
-                投稿
+              <button
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                onClick={() => alert('投稿機能は開発中です')}
+              >
+                + 投稿
               </button>
             </div>
           </div>
 
-          {/* タブナビゲーション（横並び） */}
-          <div className="flex space-x-8 border-b border-gray-200">
-            {tabItems.map((tab) => (
-              <button
-                key={tab.id}
-                className={`pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                  activeTab === tab.id
-                    ? 'border-gray-800 text-gray-900'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-                onClick={() => setActiveTab(tab.id)}
-              >
-                {tab.label}
-              </button>
-            ))}
+          {/* タブナビゲーション（カラータブ） */}
+          <div className="flex space-x-8 border-b border-gray-200 dark:border-gray-700">
+            {tabItems.map((tab) => {
+              const isActive = activeTab === tab.id;
+              const colorClasses = {
+                blue: isActive ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 hover:border-blue-300',
+                green: isActive ? 'border-green-500 text-green-600 dark:text-green-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-green-500 dark:hover:text-green-400 hover:border-green-300',
+                purple: isActive ? 'border-purple-500 text-purple-600 dark:text-purple-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-purple-500 dark:hover:text-purple-400 hover:border-purple-300',
+                red: isActive ? 'border-red-500 text-red-600 dark:text-red-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 hover:border-red-300'
+              };
+
+              return (
+                <button
+                  key={tab.id}
+                  className={`pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${colorClasses[tab.color as keyof typeof colorClasses]}`}
+                  onClick={() => setActiveTab(tab.id)}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
           </div>
         </div>
       </header>
 
       {/* フィルターバー */}
-      <div className="bg-gray-50 border-b border-gray-200">
+      <div className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <span className="text-sm font-medium text-gray-700">
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 フィルター:
               </span>
               <select
-                className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-white"
+                className="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 value={selectedFilter}
                 onChange={(e) => setSelectedFilter(e.target.value)}
               >
@@ -647,24 +433,43 @@ export default function HomePage() {
         </div>
       </div>
 
+      {/* 検索結果表示 */}
+      {searchQuery && !loading && (
+        <div className="bg-blue-50 dark:bg-blue-900/30 border-b border-blue-200 dark:border-blue-800">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <p className="text-sm text-blue-800 dark:text-blue-200">
+              「{searchQuery}」の検索結果: {trendingCodes.length + newCodes.length}件
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* メインコンテンツ */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* トレンド・人気投稿セクション */}
         <div className="mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
             トレンド・人気投稿
           </h2>
 
           {/* 投稿グリッド（正方形、横に3つ、モバイルで2つ） */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8">
-            {trendingCodes.map((post) => (
-              <PostCard key={post.id} post={post} />
-            ))}
-          </div>
+          {loading ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8">
+              {Array(6).fill(0).map((_, i) => (
+                <div key={i} className="bg-gray-200 rounded-lg aspect-square animate-pulse"></div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8">
+              {trendingCodes.map((post) => (
+                <PostCard key={post.id} post={post} />
+              ))}
+            </div>
+          )}
 
           {/* もっと見るボタン */}
           <div className="text-center mb-12">
-            <button className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium transition-colors">
+            <button className="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 px-6 py-3 rounded-lg font-medium transition-colors">
               もっと見る
             </button>
           </div>
@@ -672,69 +477,77 @@ export default function HomePage() {
 
         {/* 新規投稿セクション */}
         <div>
-          <h2 className="text-xl font-bold text-gray-900 mb-6">新規投稿</h2>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">新規投稿</h2>
 
           {/* 新規投稿グリッド */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-            {newCodes.map((post) => (
-              <PostCard key={post.id} post={post} />
-            ))}
-          </div>
+          {loading ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+              {Array(6).fill(0).map((_, i) => (
+                <div key={i} className="bg-gray-200 rounded-lg aspect-square animate-pulse"></div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+              {newCodes.map((post) => (
+                <PostCard key={post.id} post={post} />
+              ))}
+            </div>
+          )}
 
           {/* スクロール示唆 */}
           <div className="text-center mt-8 py-4">
-            <div className="text-sm text-gray-500 mb-2">
+            <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">
               スクロールして続きを見る
             </div>
-            <div className="text-2xl text-gray-400">↓ ↓</div>
+            <div className="text-2xl text-gray-400 dark:text-gray-500">↓ ↓</div>
           </div>
         </div>
       </main>
 
       {/* フッター（横並び） */}
-      <footer className="bg-gray-50 border-t border-gray-200 mt-16">
+      <footer className="bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-wrap justify-center gap-x-12 gap-y-6 text-sm">
             <div className="flex items-center space-x-6">
-              <span className="font-semibold text-gray-900">About Us</span>
-              <a href="#" className="text-gray-600 hover:text-gray-900">
+              <span className="font-semibold text-gray-900 dark:text-white">About Us</span>
+              <a href="#" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
                 会社概要
               </a>
-              <a href="#" className="text-gray-600 hover:text-gray-900">
+              <a href="#" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
                 チーム
               </a>
             </div>
             <div className="flex items-center space-x-6">
-              <span className="font-semibold text-gray-900">ガイド・Q&A</span>
-              <a href="#" className="text-gray-600 hover:text-gray-900">
+              <span className="font-semibold text-gray-900 dark:text-white">ガイド・Q&A</span>
+              <a href="#" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
                 使い方
               </a>
-              <a href="#" className="text-gray-600 hover:text-gray-900">
+              <a href="#" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
                 FAQ
               </a>
             </div>
             <div className="flex items-center space-x-6">
-              <span className="font-semibold text-gray-900">各種リンク</span>
-              <a href="#" className="text-gray-600 hover:text-gray-900">
+              <span className="font-semibold text-gray-900 dark:text-white">各種リンク</span>
+              <a href="#" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
                 API
               </a>
-              <a href="#" className="text-gray-600 hover:text-gray-900">
+              <a href="#" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
                 GitHub
               </a>
             </div>
             <div className="flex items-center space-x-6">
-              <span className="font-semibold text-gray-900">
+              <span className="font-semibold text-gray-900 dark:text-white">
                 リーガル・ポリシー
               </span>
-              <a href="#" className="text-gray-600 hover:text-gray-900">
+              <a href="#" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
                 利用規約
               </a>
-              <a href="#" className="text-gray-600 hover:text-gray-900">
+              <a href="#" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
                 プライバシー
               </a>
             </div>
           </div>
-          <div className="border-t border-gray-200 mt-6 pt-6 text-center text-xs text-gray-500">
+          <div className="border-t border-gray-200 dark:border-gray-700 mt-6 pt-6 text-center text-xs text-gray-500 dark:text-gray-400">
             <p>© 2024 CodeBook. All rights reserved.</p>
           </div>
         </div>

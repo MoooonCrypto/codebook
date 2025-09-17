@@ -1,0 +1,118 @@
+{
+  "posts": [
+    {
+      "id": "post-001",
+      "title": "React カスタムフック useLocalStorage",
+      "description": "ローカルストレージの値を状態として管理するカスタムフックの実装",
+      "content": "# React カスタムフック useLocalStorage\n\nローカルストレージと React の状態管理を組み合わせた便利なカスタムフックです。\n\n## 特徴\n- 初期値の設定が可能\n- JSON の自動パース/stringify\n- エラーハンドリング付き\n\n## 使用例\n```tsx\nconst [name, setName] = useLocalStorage('username', '匿名ユーザー');\n```",
+      "sourceCode": {
+        "filename": "useLocalStorage.ts",
+        "language": "typescript",
+        "code": "const useLocalStorage = (key, initialValue) => {\n  const [storedValue, setStoredValue] = useState(() => {\n    try {\n      const item = window.localStorage.getItem(key);\n      return item ? JSON.parse(item) : initialValue;\n    } catch (error) {\n      return initialValue;\n    }\n  });\n  \n  const setValue = (value) => {\n    try {\n      setStoredValue(value);\n      window.localStorage.setItem(key, JSON.stringify(value));\n    } catch (error) {\n      console.error(error);\n    }\n  };\n  \n  return [storedValue, setValue];\n};"
+      },
+      "authorId": "user-001",
+      "tags": ["react", "typescript", "hooks", "localstorage"],
+      "likes": 42,
+      "views": 128,
+      "comments": 5,
+      "isPublished": true,
+      "createdAt": "2024-01-15T09:30:00Z",
+      "updatedAt": "2024-01-15T09:30:00Z"
+    },
+    {
+      "id": "post-002",
+      "title": "Python 非同期処理でAPI呼び出し最適化",
+      "description": "aiohttp を使用した効率的な API 並列処理の実装方法",
+      "content": "# Python 非同期処理でAPI呼び出し最適化\n\n複数のAPIを並列で呼び出すことで、処理時間を大幅に短縮できます。\n\n## aiohttp を使用した実装\n- `asyncio.gather()` で複数タスクを並列実行\n- セッション管理でコネクション効率化\n- エラーハンドリング付き\n\n## パフォーマンス向上\n従来の同期処理と比較して約70%の時間短縮を実現。",
+      "sourceCode": {
+        "filename": "async_api_client.py",
+        "language": "python",
+        "code": "import asyncio\nimport aiohttp\n\nasync def fetch_data(session, url):\n    async with session.get(url) as response:\n        return await response.json()\n\nasync def main():\n    urls = ['http://api1.com', 'http://api2.com']\n    async with aiohttp.ClientSession() as session:\n        tasks = [fetch_data(session, url) for url in urls]\n        results = await asyncio.gather(*tasks)\n    return results"
+      },
+      "authorId": "user-002",
+      "tags": ["python", "asyncio", "api", "aiohttp"],
+      "likes": 89,
+      "views": 256,
+      "comments": 12,
+      "isPublished": true,
+      "createdAt": "2024-01-14T14:22:00Z",
+      "updatedAt": "2024-01-14T15:10:00Z"
+    },
+    {
+      "id": "post-003",
+      "title": "CSS Grid レスポンシブレイアウト",
+      "description": "CSS Grid を使用したモダンなレスポンシブデザインの実装",
+      "content": "# CSS Grid レスポンシブレイアウト\n\nCSS Grid の `auto-fit` と `minmax()` を組み合わせた柔軟なレイアウト設計。\n\n## ポイント\n- `repeat(auto-fit, minmax(300px, 1fr))` でアイテム数に応じて自動調整\n- gap プロパティで統一された余白\n- メディアクエリ最小限でレスポンシブ対応\n\n## ブラウザサポート\nモダンブラウザで完全サポート（IE11は部分対応）",
+      "sourceCode": {
+        "filename": "responsive-grid.css",
+        "language": "css",
+        "code": ".container {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));\n  gap: 1rem;\n  padding: 1rem;\n}\n\n.item {\n  background: white;\n  border-radius: 8px;\n  padding: 1rem;\n  box-shadow: 0 2px 4px rgba(0,0,0,0.1);\n}\n\n@media (max-width: 768px) {\n  .container {\n    grid-template-columns: 1fr;\n  }\n}"
+      },
+      "authorId": "user-003",
+      "tags": ["css", "grid", "responsive", "layout"],
+      "likes": 67,
+      "views": 189,
+      "comments": 8,
+      "isPublished": true,
+      "createdAt": "2024-01-13T11:45:00Z",
+      "updatedAt": "2024-01-13T11:45:00Z"
+    },
+    {
+      "id": "post-004",
+      "title": "Go 並行処理ワーカープール",
+      "description": "Go の goroutine とチャンネルを使った効率的なワーカープール実装",
+      "content": "# Go 並行処理ワーカープール\n\nGo の強力な並行処理機能を活用したワーカープールパターンの実装。\n\n## 実装のポイント\n- バッファ付きチャンネルでジョブキューを実装\n- 複数のワーカー goroutine で並列処理\n- graceful shutdown 対応\n\n## 用途\n- 大量データの並列処理\n- API リクエストの制限付き並列実行\n- バッチ処理システム",
+      "sourceCode": {
+        "filename": "worker_pool.go",
+        "language": "go",
+        "code": "package main\n\nimport (\n    \"fmt\"\n    \"sync\"\n)\n\nfunc worker(id int, jobs <-chan int, results chan<- int) {\n    for j := range jobs {\n        fmt.Printf(\"worker %d processing job %d\\n\", id, j)\n        results <- j * 2\n    }\n}\n\nfunc main() {\n    jobs := make(chan int, 100)\n    results := make(chan int, 100)\n    \n    for w := 1; w <= 3; w++ {\n        go worker(w, jobs, results)\n    }\n}"
+      },
+      "authorId": "user-004",
+      "tags": ["go", "concurrency", "goroutine", "channel"],
+      "likes": 134,
+      "views": 298,
+      "comments": 15,
+      "isPublished": true,
+      "createdAt": "2024-01-12T16:30:00Z",
+      "updatedAt": "2024-01-12T16:30:00Z"
+    },
+    {
+      "id": "post-005",
+      "title": "Rust 所有権システム活用法",
+      "description": "Rust の所有権システムを活用したメモリ安全なプログラミング",
+      "content": "# Rust 所有権システム活用法\n\nRust の所有権システムを理解することで、メモリ安全性とパフォーマンスを両立できます。\n\n## 所有権の基本ルール\n1. 各値には所有者が存在する\n2. 所有者は同時に1つだけ\n3. 所有者がスコープを出ると値は破棄される\n\n## 借用とライフタイム\n- 不変借用 `&T` と可変借用 `&mut T`\n- ライフタイム注釈でコンパイル時チェック",
+      "sourceCode": {
+        "filename": "ownership_example.rs",
+        "language": "rust",
+        "code": "struct Person {\n    name: String,\n    age: u32,\n}\n\nimpl Person {\n    fn new(name: String, age: u32) -> Self {\n        Person { name, age }\n    }\n    \n    fn greet(&self) -> String {\n        format!(\"Hello, my name is {} and I'm {} years old\", \n                self.name, self.age)\n    }\n    \n    fn have_birthday(&mut self) {\n        self.age += 1;\n    }\n}"
+      },
+      "authorId": "user-005",
+      "tags": ["rust", "ownership", "memory-safety", "systems"],
+      "likes": 78,
+      "views": 167,
+      "comments": 9,
+      "isPublished": true,
+      "createdAt": "2024-01-11T13:15:00Z",
+      "updatedAt": "2024-01-11T13:20:00Z"
+    },
+    {
+      "id": "post-006",
+      "title": "Next.js App Router パフォーマンス最適化",
+      "description": "Next.js 13+ App Router でのパフォーマンス改善テクニック集",
+      "content": "# Next.js App Router パフォーマンス最適化\n\nNext.js 13以降のApp Routerにおけるパフォーマンス最適化の実践的手法。\n\n## 主要な最適化ポイント\n- Server Components の積極的活用\n- 動的インポートによるコード分割\n- 画像最適化とレイジーローディング\n- メタデータ API でのSEO改善\n\n## 測定とモニタリング\nNext.js Analytics やWeb Vitals での継続的パフォーマンス監視。",
+      "sourceCode": {
+        "filename": "optimized-page.tsx",
+        "language": "typescript",
+        "code": "import { Suspense } from 'react';\nimport { Metadata } from 'next';\nimport dynamic from 'next/dynamic';\n\n// 動的インポートでコード分割\nconst HeavyComponent = dynamic(() => import('./HeavyComponent'), {\n  loading: () => <div>Loading...</div>\n});\n\nexport const metadata: Metadata = {\n  title: 'Optimized Page',\n  description: 'Performance optimized Next.js page'\n};\n\nexport default function OptimizedPage() {\n  return (\n    <div>\n      <h1>Optimized Page</h1>\n      <Suspense fallback={<div>Loading heavy content...</div>}>\n        <HeavyComponent />\n      </Suspense>\n    </div>\n  );\n}"
+      },
+      "authorId": "user-001",
+      "tags": ["nextjs", "react", "performance", "optimization"],
+      "likes": 95,
+      "views": 223,
+      "comments": 11,
+      "isPublished": true,
+      "createdAt": "2024-01-10T10:00:00Z",
+      "updatedAt": "2024-01-10T10:15:00Z"
+    }
+  ]
+}

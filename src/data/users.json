@@ -1,0 +1,191 @@
+{
+  "users": [
+    {
+      "id": "user-001",
+      "username": "yamada_taro",
+      "displayName": "山田太郎",
+      "avatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=120&h=120&fit=crop&crop=face",
+      "bio": "フロントエンドエンジニア | React/Next.js が好き | TypeScript で型安全な開発を心がけています",
+      "location": "東京, 日本",
+      "website": "https://yamada-taro.dev",
+      "social": {
+        "github": "yamada-taro",
+        "twitter": "yamada_taro_dev",
+        "linkedin": "yamada-taro-frontend"
+      },
+      "stats": {
+        "posts": 23,
+        "likes": 456,
+        "followers": 128,
+        "following": 89
+      },
+      "badges": [
+        "初投稿",
+        "10投稿達成",
+        "人気投稿",
+        "React マスター",
+        "100いいね達成"
+      ],
+      "joinedAt": "2023-08-15T10:00:00Z",
+      "lastActiveAt": "2024-01-16T08:30:00Z"
+    },
+    {
+      "id": "user-002",
+      "username": "python_master",
+      "displayName": "Python Master",
+      "avatar": "https://images.unsplash.com/photo-1494790108755-2616b612b5a1?w=120&h=120&fit=crop&crop=face",
+      "bio": "Pythonで何でも作る | 機械学習・Web開発・自動化が得意 | OSS コントリビューター",
+      "location": "大阪, 日本",
+      "website": "https://python-master.com",
+      "social": {
+        "github": "python-master-dev",
+        "twitter": "python_master_jp",
+        "linkedin": "python-master"
+      },
+      "stats": {
+        "posts": 45,
+        "likes": 1234,
+        "followers": 567,
+        "following": 123
+      },
+      "badges": [
+        "初投稿",
+        "10投稿達成",
+        "50投稿達成",
+        "人気投稿",
+        "Python エキスパート",
+        "100いいね達成",
+        "1000いいね達成",
+        "OSS コントリビューター"
+      ],
+      "joinedAt": "2023-03-22T14:15:00Z",
+      "lastActiveAt": "2024-01-15T19:45:00Z"
+    },
+    {
+      "id": "user-003",
+      "username": "css_wizard",
+      "displayName": "CSS Wizard",
+      "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=120&h=120&fit=crop&crop=face",
+      "bio": "UI/UXデザイナー | CSS の魔法使い | 美しいWebデザインとアクセシブルなUI作りが情熱",
+      "location": "福岡, 日本",
+      "website": "https://css-wizard.design",
+      "social": {
+        "github": "css-wizard",
+        "twitter": "css_wizard_jp",
+        "linkedin": "css-wizard-designer"
+      },
+      "stats": {
+        "posts": 31,
+        "likes": 789,
+        "followers": 234,
+        "following": 156
+      },
+      "badges": [
+        "初投稿",
+        "10投稿達成",
+        "人気投稿",
+        "CSS スペシャリスト",
+        "デザイナー",
+        "100いいね達成",
+        "アクセシビリティ推進者"
+      ],
+      "joinedAt": "2023-06-10T16:30:00Z",
+      "lastActiveAt": "2024-01-14T12:20:00Z"
+    },
+    {
+      "id": "user-004",
+      "username": "go_master",
+      "displayName": "Go Master",
+      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&h=120&fit=crop&crop=face",
+      "bio": "インフラエンジニア | Go言語とクラウドアーキテクチャが専門 | Kubernetes・Docker のエバンジェリスト",
+      "location": "愛知, 日本",
+      "website": "https://go-master-infra.com",
+      "social": {
+        "github": "go-master-infra",
+        "twitter": "go_master_k8s",
+        "linkedin": "go-master-sre"
+      },
+      "stats": {
+        "posts": 18,
+        "likes": 543,
+        "followers": 189,
+        "following": 67
+      },
+      "badges": [
+        "初投稿",
+        "10投稿達成",
+        "人気投稿",
+        "Go エキスパート",
+        "インフラ スペシャリスト",
+        "100いいね達成",
+        "クラウド アーキテクト"
+      ],
+      "joinedAt": "2023-09-05T11:00:00Z",
+      "lastActiveAt": "2024-01-13T20:15:00Z"
+    },
+    {
+      "id": "user-005",
+      "username": "rust_expert",
+      "displayName": "Rust Expert",
+      "avatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=120&h=120&fit=crop&crop=face",
+      "bio": "システムプログラマー | Rustでパフォーマンス重視の開発 | WebAssembly・組み込み開発も手がける",
+      "location": "北海道, 日本",
+      "website": "https://rust-expert.dev",
+      "social": {
+        "github": "rust-expert-sys",
+        "twitter": "rust_expert_wasm",
+        "linkedin": "rust-expert-systems"
+      },
+      "stats": {
+        "posts": 27,
+        "likes": 678,
+        "followers": 145,
+        "following": 92
+      },
+      "badges": [
+        "初投稿",
+        "10投稿達成",
+        "人気投稿",
+        "Rust スペシャリスト",
+        "システムプログラマー",
+        "100いいね達成",
+        "WebAssembly パイオニア"
+      ],
+      "joinedAt": "2023-04-18T09:45:00Z",
+      "lastActiveAt": "2024-01-12T15:30:00Z"
+    },
+    {
+      "id": "user-006",
+      "username": "fullstack_dev",
+      "displayName": "Full Stack Developer",
+      "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&h=120&fit=crop&crop=face",
+      "bio": "フルスタック開発者 | スタートアップでCTOをしています | 新しい技術の探求と実装が大好き",
+      "location": "東京, 日本",
+      "website": "https://fullstack-dev.tech",
+      "social": {
+        "github": "fullstack-dev-cto",
+        "twitter": "fullstack_dev_jp",
+        "linkedin": "fullstack-developer-cto"
+      },
+      "stats": {
+        "posts": 52,
+        "likes": 1567,
+        "followers": 834,
+        "following": 234
+      },
+      "badges": [
+        "初投稿",
+        "10投稿達成",
+        "50投稿達成",
+        "人気投稿",
+        "フルスタック エンジニア",
+        "CTO",
+        "100いいね達成",
+        "1000いいね達成",
+        "イノベーター"
+      ],
+      "joinedAt": "2022-12-01T08:00:00Z",
+      "lastActiveAt": "2024-01-16T22:10:00Z"
+    }
+  ]
+}

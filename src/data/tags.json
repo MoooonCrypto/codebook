@@ -1,0 +1,274 @@
+{
+  "tags": [
+    {
+      "id": "tag-001",
+      "name": "react",
+      "description": "Reactライブラリを使用した開発",
+      "category": "framework",
+      "color": "blue",
+      "usageCount": 2,
+      "createdAt": "2023-01-10T00:00:00Z"
+    },
+    {
+      "id": "tag-002",
+      "name": "typescript",
+      "description": "TypeScriptを使用した型安全な開発",
+      "category": "language",
+      "color": "blue",
+      "usageCount": 3,
+      "createdAt": "2023-01-10T00:00:00Z"
+    },
+    {
+      "id": "tag-003",
+      "name": "hooks",
+      "description": "React Hooksを活用した実装",
+      "category": "concept",
+      "color": "purple",
+      "usageCount": 1,
+      "createdAt": "2023-01-10T00:00:00Z"
+    },
+    {
+      "id": "tag-004",
+      "name": "localstorage",
+      "description": "ブラウザのローカルストレージ機能",
+      "category": "tool",
+      "color": "green",
+      "usageCount": 1,
+      "createdAt": "2023-01-10T00:00:00Z"
+    },
+    {
+      "id": "tag-005",
+      "name": "python",
+      "description": "Pythonプログラミング言語",
+      "category": "language",
+      "color": "yellow",
+      "usageCount": 1,
+      "createdAt": "2023-01-10T00:00:00Z"
+    },
+    {
+      "id": "tag-006",
+      "name": "asyncio",
+      "description": "Python非同期プログラミング",
+      "category": "concept",
+      "color": "indigo",
+      "usageCount": 1,
+      "createdAt": "2023-01-10T00:00:00Z"
+    },
+    {
+      "id": "tag-007",
+      "name": "api",
+      "description": "API開発・連携",
+      "category": "concept",
+      "color": "orange",
+      "usageCount": 1,
+      "createdAt": "2023-01-10T00:00:00Z"
+    },
+    {
+      "id": "tag-008",
+      "name": "aiohttp",
+      "description": "Python非同期HTTPライブラリ",
+      "category": "framework",
+      "color": "red",
+      "usageCount": 1,
+      "createdAt": "2023-01-10T00:00:00Z"
+    },
+    {
+      "id": "tag-009",
+      "name": "css",
+      "description": "CSS（Cascading Style Sheets）",
+      "category": "language",
+      "color": "pink",
+      "usageCount": 1,
+      "createdAt": "2023-01-10T00:00:00Z"
+    },
+    {
+      "id": "tag-010",
+      "name": "grid",
+      "description": "CSS Grid レイアウト",
+      "category": "concept",
+      "color": "emerald",
+      "usageCount": 1,
+      "createdAt": "2023-01-10T00:00:00Z"
+    },
+    {
+      "id": "tag-011",
+      "name": "responsive",
+      "description": "レスポンシブデザイン",
+      "category": "concept",
+      "color": "teal",
+      "usageCount": 2,
+      "createdAt": "2023-01-10T00:00:00Z"
+    },
+    {
+      "id": "tag-012",
+      "name": "layout",
+      "description": "レイアウト設計",
+      "category": "concept",
+      "color": "cyan",
+      "usageCount": 1,
+      "createdAt": "2023-01-10T00:00:00Z"
+    },
+    {
+      "id": "tag-013",
+      "name": "go",
+      "description": "Go プログラミング言語",
+      "category": "language",
+      "color": "sky",
+      "usageCount": 1,
+      "createdAt": "2023-01-10T00:00:00Z"
+    },
+    {
+      "id": "tag-014",
+      "name": "concurrency",
+      "description": "並行処理・並列処理",
+      "category": "concept",
+      "color": "violet",
+      "usageCount": 1,
+      "createdAt": "2023-01-10T00:00:00Z"
+    },
+    {
+      "id": "tag-015",
+      "name": "goroutine",
+      "description": "Go の軽量スレッド",
+      "category": "concept",
+      "color": "purple",
+      "usageCount": 1,
+      "createdAt": "2023-01-10T00:00:00Z"
+    },
+    {
+      "id": "tag-016",
+      "name": "channel",
+      "description": "Go のチャンネル通信",
+      "category": "concept",
+      "color": "fuchsia",
+      "usageCount": 1,
+      "createdAt": "2023-01-10T00:00:00Z"
+    },
+    {
+      "id": "tag-017",
+      "name": "rust",
+      "description": "Rust プログラミング言語",
+      "category": "language",
+      "color": "rose",
+      "usageCount": 1,
+      "createdAt": "2023-01-10T00:00:00Z"
+    },
+    {
+      "id": "tag-018",
+      "name": "ownership",
+      "description": "Rust の所有権システム",
+      "category": "concept",
+      "color": "amber",
+      "usageCount": 1,
+      "createdAt": "2023-01-10T00:00:00Z"
+    },
+    {
+      "id": "tag-019",
+      "name": "memory-safety",
+      "description": "メモリ安全性",
+      "category": "concept",
+      "color": "lime",
+      "usageCount": 1,
+      "createdAt": "2023-01-10T00:00:00Z"
+    },
+    {
+      "id": "tag-020",
+      "name": "systems",
+      "description": "システムプログラミング",
+      "category": "domain",
+      "color": "stone",
+      "usageCount": 1,
+      "createdAt": "2023-01-10T00:00:00Z"
+    },
+    {
+      "id": "tag-021",
+      "name": "nextjs",
+      "description": "Next.js React フレームワーク",
+      "category": "framework",
+      "color": "gray",
+      "usageCount": 1,
+      "createdAt": "2023-01-10T00:00:00Z"
+    },
+    {
+      "id": "tag-022",
+      "name": "performance",
+      "description": "パフォーマンス最適化",
+      "category": "concept",
+      "color": "red",
+      "usageCount": 1,
+      "createdAt": "2023-01-10T00:00:00Z"
+    },
+    {
+      "id": "tag-023",
+      "name": "optimization",
+      "description": "最適化技術",
+      "category": "concept",
+      "color": "orange",
+      "usageCount": 1,
+      "createdAt": "2023-01-10T00:00:00Z"
+    },
+    {
+      "id": "tag-024",
+      "name": "javascript",
+      "description": "JavaScript プログラミング言語",
+      "category": "language",
+      "color": "yellow",
+      "usageCount": 0,
+      "createdAt": "2023-01-10T00:00:00Z"
+    },
+    {
+      "id": "tag-025",
+      "name": "nodejs",
+      "description": "Node.js ランタイム環境",
+      "category": "framework",
+      "color": "green",
+      "usageCount": 0,
+      "createdAt": "2023-01-10T00:00:00Z"
+    },
+    {
+      "id": "tag-026",
+      "name": "express",
+      "description": "Express.js Web フレームワーク",
+      "category": "framework",
+      "color": "emerald",
+      "usageCount": 0,
+      "createdAt": "2023-01-10T00:00:00Z"
+    },
+    {
+      "id": "tag-027",
+      "name": "mongodb",
+      "description": "MongoDB NoSQL データベース",
+      "category": "database",
+      "color": "teal",
+      "usageCount": 0,
+      "createdAt": "2023-01-10T00:00:00Z"
+    },
+    {
+      "id": "tag-028",
+      "name": "postgresql",
+      "description": "PostgreSQL リレーショナルデータベース",
+      "category": "database",
+      "color": "cyan",
+      "usageCount": 0,
+      "createdAt": "2023-01-10T00:00:00Z"
+    },
+    {
+      "id": "tag-029",
+      "name": "docker",
+      "description": "Docker コンテナ技術",
+      "category": "tool",
+      "color": "sky",
+      "usageCount": 0,
+      "createdAt": "2023-01-10T00:00:00Z"
+    },
+    {
+      "id": "tag-030",
+      "name": "kubernetes",
+      "description": "Kubernetes オーケストレーション",
+      "category": "tool",
+      "color": "blue",
+      "usageCount": 0,
+      "createdAt": "2023-01-10T00:00:00Z"
+    }
+  ]
+}
