@@ -32,6 +32,8 @@ export interface SourceCode {
   filename: string;
   language: string;
   code: string;
+  fileExtension?: string; // .js, .py, .tsx など
+  detectedLanguage?: string; // ファイル拡張子から自動検出された言語
 }
 
 // 投稿情報
@@ -42,6 +44,11 @@ export interface Post {
   content: string;
   sourceCode: SourceCode;
   authorId: string;
+  author: {
+    id: string;
+    name: string;
+    email: string;
+  };
   tags: string[];
   likes: number;
   views: number;

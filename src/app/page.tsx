@@ -4,9 +4,10 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { CodePost } from '@/types';
-import { getTrendingPosts, getLatestPosts, searchPosts } from '@/lib/api';
+import { getTrendingPosts, getLatestPosts } from '@/lib/api';
 import { convertToCodePosts } from '@/lib/utils';
 import { ThemeToggle } from './components/ThemeToggle';
+import { ThemeAwareLogo } from './components/ThemeAwareLogo';
 
 // アイコンコンポーネントを直接定義（lucide-react代替）
 const SearchIcon = () => (
@@ -96,7 +97,6 @@ const TagIcon = ({ size = 8 }: { size?: number }) => (
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState('ホーム');
-  const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('すべて');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [bookmarkedPosts, setBookmarkedPosts] = useState(new Set<string>());
@@ -129,30 +129,6 @@ export default function HomePage() {
     loadData();
   }, []);
 
-  useEffect(() => {
-    const performSearch = async () => {
-      if (!searchQuery.trim()) {
-        const [trendingPosts, latestPosts] = await Promise.all([
-          getTrendingPosts(6),
-          getLatestPosts(6)
-        ]);
-        const [trendingCodePosts, latestCodePosts] = await Promise.all([
-          convertToCodePosts(trendingPosts),
-          convertToCodePosts(latestPosts)
-        ]);
-        setTrendingCodes(trendingCodePosts);
-        setNewCodes(latestCodePosts);
-      } else {
-        const searchResults = await searchPosts(searchQuery);
-        const searchCodePosts = await convertToCodePosts(searchResults);
-        setTrendingCodes(searchCodePosts.slice(0, 6));
-        setNewCodes(searchCodePosts.slice(6, 12));
-      }
-    };
-
-    const debounceTimer = setTimeout(performSearch, 300);
-    return () => clearTimeout(debounceTimer);
-  }, [searchQuery]);
 
   const tabItems = [
     { id: 'ホーム', label: 'ホーム', color: 'blue' },
@@ -280,54 +256,7 @@ export default function HomePage() {
             {/* 左側: アイコンロゴ */}
             <div className="flex items-center">
               <div className="w-10 h-10 mr-3">
-                {/* 任意の正方形画像を設置可能 */}
-                <Image
-                  src="/logo.png" // public/logo.png に任意の正方形画像を配置
-                  alt="CodeBook Logo"
-                  width={40}
-                  height={40}
-                  className="w-full h-full object-cover rounded"
-                  unoptimized
-                  onError={(e) => {
-                    // 画像が見つからない場合はデフォルトのSVGアイコンを表示
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
-                    target.nextElementSibling?.classList.remove('hidden');
-                  }}
-                />
-                {/* フォールバック用SVGアイコン */}
-                <svg viewBox="0 0 100 100" className="w-full h-full hidden">
-                  <defs>
-                    <style>
-                      {`.st0{fill:#000000;} .st1{fill:#FFFFFF;} .st2{fill:none;stroke:#000000;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;}`}
-                    </style>
-                  </defs>
-                  <path
-                    className="st0"
-                    d="M20,15h50c8.3,0,15,6.7,15,15v40c0,8.3-6.7,15-15,15H30c-8.3,0-15-6.7-15-15V15z"
-                  />
-                  <rect
-                    className="st1"
-                    x="25"
-                    y="20"
-                    width="50"
-                    height="45"
-                    rx="5"
-                    ry="5"
-                  />
-                  <polyline className="st2" points="35,35 40,40 35,45" />
-                  <polyline className="st2" points="55,35 50,40 55,45" />
-                  <line className="st2" x1="45" y1="30" x2="42" y2="50" />
-                  <rect
-                    className="st0"
-                    x="80"
-                    y="20"
-                    width="10"
-                    height="60"
-                    rx="5"
-                    ry="5"
-                  />
-                </svg>
+                <ThemeAwareLogo />
               </div>
               <span className="font-bold text-xl text-gray-900 dark:text-white">CodeBook</span>
             </div>
@@ -342,19 +271,14 @@ export default function HomePage() {
                 </svg>
               </button>
 
-              {/* 検索フォーム */}
-              <div className="relative">
-                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500">
-                  <SearchIcon />
-                </div>
-                <input
-                  type="text"
-                  placeholder="キーワード検索..."
-                  className="w-64 pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
+              {/* 検索ボタン */}
+              <Link
+                href="/search"
+                className="flex items-center space-x-2 px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              >
+                <SearchIcon />
+                <span className="text-sm font-medium">検索</span>
+              </Link>
 
               {/* テーマ切り替えボタン */}
               <ThemeToggle />
@@ -375,12 +299,12 @@ export default function HomePage() {
               )}
 
               {/* 投稿ボタン */}
-              <button
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
-                onClick={() => alert('投稿機能は開発中です')}
+              <Link
+                href="/posts/create"
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors inline-block"
               >
                 + 投稿
-              </button>
+              </Link>
             </div>
           </div>
 
@@ -433,16 +357,6 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* 検索結果表示 */}
-      {searchQuery && !loading && (
-        <div className="bg-blue-50 dark:bg-blue-900/30 border-b border-blue-200 dark:border-blue-800">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <p className="text-sm text-blue-800 dark:text-blue-200">
-              「{searchQuery}」の検索結果: {trendingCodes.length + newCodes.length}件
-            </p>
-          </div>
-        </div>
-      )}
 
       {/* メインコンテンツ */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

@@ -8,6 +8,7 @@ import { Post, User } from '@/types';
 import { fetchPostById, fetchUserById } from '@/lib/api';
 import { formatRelativeDate } from '@/lib/utils';
 import { ThemeToggle } from '../../components/ThemeToggle';
+import { ThemeAwareLogo } from '../../components/ThemeAwareLogo';
 
 // アイコンコンポーネント
 const HeartIcon = ({ size = 16, filled = false }: { size?: number; filled?: boolean }) => (
@@ -40,20 +41,6 @@ const BookmarkIcon = ({ size = 16, filled = false }: { size?: number; filled?: b
   </svg>
 );
 
-const ArrowLeftIcon = ({ size = 20 }: { size?: number }) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M19 12H5M12 19l-7-7 7-7"></path>
-  </svg>
-);
 
 const FileIcon = ({ size = 14 }: { size?: number }) => (
   <svg
@@ -709,15 +696,50 @@ export default ApiClient;`,
       {/* ヘッダー */}
       <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-12">
-            <Link
-              href="/"
-              className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-            >
-              <ArrowLeftIcon size={18} />
-              <span className="text-sm font-medium">戻る</span>
-            </Link>
-            <ThemeToggle />
+          <div className="flex items-center justify-between h-16">
+            {/* 左側: アイコンロゴ */}
+            <div className="flex items-center">
+              <Link href="/" className="flex items-center">
+                <div className="w-10 h-10 mr-3">
+                  <ThemeAwareLogo />
+                </div>
+                <span className="font-bold text-xl text-gray-900 dark:text-white">CodeBook</span>
+              </Link>
+            </div>
+
+            {/* 右側: メニュー */}
+            <div className="flex items-center space-x-4">
+              {/* 検索ボタン */}
+              <Link
+                href="/search"
+                className="flex items-center space-x-2 px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <span className="text-sm font-medium">検索</span>
+              </Link>
+
+              {/* プロフィール */}
+              <button className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <span className="text-sm font-medium">プロフィール</span>
+              </button>
+
+              {/* 投稿ボタン */}
+              <Link
+                href="/posts/create"
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors inline-block"
+              >
+                + 投稿
+              </Link>
+
+              {/* テーマ切り替えボタン */}
+              <ThemeToggle />
+            </div>
           </div>
         </div>
       </header>
