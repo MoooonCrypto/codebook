@@ -124,8 +124,8 @@ export interface EnhancedCodePost extends CodePost {
 // ユーティリティ型
 // ========================================
 
-// 投稿作成用の型（IDや作成日時は除外）
-export type CreatePost = Omit<Post, 'id' | 'createdAt' | 'updatedAt' | 'likes' | 'views' | 'comments'>;
+// 投稿作成用の型（IDや作成日時、統計情報、author情報は除外）
+export type CreatePost = Omit<Post, 'id' | 'createdAt' | 'updatedAt' | 'likes' | 'views' | 'comments' | 'author'>;
 
 // ユーザー更新用の型（統計情報や日時は除外）
 export type UpdateUser = Omit<User, 'id' | 'stats' | 'joinedAt' | 'lastActiveAt'>;

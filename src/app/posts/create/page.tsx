@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { CreatePost, Tag } from '@/types';
+import type { CreatePost, Tag } from '@/types';
 import { CodeEditor, CodeDisplay } from '@/app/components/CodeEditor';
 import { MarkdownRenderer } from '@/app/components/MarkdownRenderer';
 import { TagInput } from '@/app/components/TagInput';
