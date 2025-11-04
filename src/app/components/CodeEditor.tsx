@@ -136,7 +136,6 @@ export function CodeEditor({
           contextmenu: true,
           selectOnLineNumbers: true,
           roundedSelection: false,
-          renderIndentGuides: true,
           cursorBlinking: 'blink',
           cursorSmoothCaretAnimation: 'on',
           renderWhitespace: 'boundary',

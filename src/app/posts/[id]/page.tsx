@@ -946,7 +946,7 @@ export default ApiClient;`,
                     if (paragraph.startsWith('#')) {
                       const level = paragraph.match(/^#+/)?.[0].length || 1;
                       const text = paragraph.replace(/^#+\s*/, '');
-                      const HeadingTag = `h${Math.min(level, 6)}` as keyof JSX.IntrinsicElements;
+                      const HeadingTag = `h${Math.min(level, 6)}` as keyof React.JSX.IntrinsicElements;
                       return (
                         <HeadingTag
                           key={index}
