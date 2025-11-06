@@ -112,22 +112,22 @@ function SearchPageContent() {
       <div className="min-h-screen bg-white dark:bg-gray-900">
         {/* グローバルヘッダー */}
         <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
-          <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
-            <div className="flex items-center justify-between h-12 sm:h-16">
+          <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+            <div className="flex items-center justify-between h-11 sm:h-16">
               {/* 左側: ロゴ */}
-              <Link href="/" className="flex items-center flex-shrink-0 min-w-0">
-                <div className="w-7 h-7 sm:w-10 sm:h-10 mr-1.5 sm:mr-3 flex-shrink-0">
+              <Link href="/" className="flex items-center flex-shrink-0 min-w-0 mr-2">
+                <div className="w-6 h-6 sm:w-10 sm:h-10 mr-1 sm:mr-3 flex-shrink-0">
                   <ThemeAwareLogo />
                 </div>
-                <span className="font-bold text-base sm:text-xl text-gray-900 dark:text-white truncate">CodeBook</span>
+                <span className="font-bold text-sm sm:text-xl text-gray-900 dark:text-white truncate">CodeBook</span>
               </Link>
 
               {/* 右側: ボタン群 */}
-              <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+              <div className="flex items-center gap-0.5 sm:gap-2 flex-shrink-0">
                 {/* 検索ボタン - アクティブ */}
                 <Link
                   href="/search"
-                  className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex-shrink-0"
+                  className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex-shrink-0"
                   aria-label="検索"
                 >
                   <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -146,7 +146,7 @@ function SearchPageContent() {
                 {/* 投稿ボタン */}
                 <Link
                   href="/posts/create"
-                  className="bg-blue-600 text-white px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors text-xs sm:text-sm whitespace-nowrap flex-shrink-0"
+                  className="bg-blue-600 text-white px-2 py-1 sm:px-4 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium hover:bg-blue-700 transition-colors whitespace-nowrap flex-shrink-0"
                 >
                   投稿
                 </Link>
@@ -183,13 +183,13 @@ function SearchPageContent() {
         {/* メインコンテンツ */}
         <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
           {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-6">
               {Array(6).fill(0).map((_, i) => (
-                <div key={i} className="bg-gray-200 dark:bg-gray-700 rounded-lg h-auto min-h-[300px] lg:aspect-square animate-pulse w-full"></div>
+                <div key={i} className="bg-gray-200 dark:bg-gray-700 rounded-lg h-auto min-h-[280px] sm:min-h-[300px] lg:aspect-square animate-pulse w-full max-w-full"></div>
               ))}
             </div>
           ) : searchResults.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-6">
               {searchResults.map((post) => (
                 <PostCard key={post.id} post={post} onTagClick={handleTagClick} />
               ))}
@@ -245,20 +245,20 @@ function SearchPageContent() {
     <div className="min-h-screen bg-white dark:bg-gray-900">
       {/* グローバルヘッダー */}
       <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
-          <div className="flex items-center justify-between h-12 sm:h-16">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+          <div className="flex items-center justify-between h-11 sm:h-16">
             {/* 左側: ロゴ */}
-            <Link href="/" className="flex items-center flex-shrink-0 min-w-0">
-              <div className="w-7 h-7 sm:w-10 sm:h-10 mr-1.5 sm:mr-3 flex-shrink-0">
+            <Link href="/" className="flex items-center flex-shrink-0 min-w-0 mr-2">
+              <div className="w-6 h-6 sm:w-10 sm:h-10 mr-1 sm:mr-3 flex-shrink-0">
                 <ThemeAwareLogo />
               </div>
-              <span className="font-bold text-base sm:text-xl text-gray-900 dark:text-white truncate">CodeBook</span>
+              <span className="font-bold text-sm sm:text-xl text-gray-900 dark:text-white truncate">CodeBook</span>
             </Link>
 
             {/* 右側: ボタン群 */}
-            <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+            <div className="flex items-center gap-0.5 sm:gap-2 flex-shrink-0">
               {/* 検索ボタン（現在のページなのでアクティブ表示） */}
-              <span className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex-shrink-0">
+              <span className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex-shrink-0">
                 <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
@@ -276,7 +276,7 @@ function SearchPageContent() {
               {/* 投稿ボタン */}
               <Link
                 href="/posts/create"
-                className="bg-blue-600 text-white px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors text-xs sm:text-sm whitespace-nowrap flex-shrink-0"
+                className="bg-blue-600 text-white px-2 py-1 sm:px-4 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium hover:bg-blue-700 transition-colors whitespace-nowrap flex-shrink-0"
               >
                 投稿
               </Link>
