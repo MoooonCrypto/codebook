@@ -161,7 +161,7 @@ export default function HomePage() {
   }) => (
     <Link
       href={`/posts/${post.id}`}
-      className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md dark:hover:shadow-gray-900/20 transition-shadow duration-200 aspect-square flex flex-col cursor-pointer"
+      className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md dark:hover:shadow-gray-900/20 transition-shadow duration-200 lg:aspect-square flex flex-col cursor-pointer w-full max-w-full"
     >
       {/* 投稿者アイコン */}
       <div className="p-4 border-b border-gray-100 dark:border-gray-700">
@@ -250,48 +250,45 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
       {/* ヘッダー */}
-      <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* 左側: アイコンロゴ */}
-            <div className="flex items-center">
-              <div className="w-10 h-10 mr-3">
+      <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+          <div className="flex items-center justify-between h-11 sm:h-16">
+            {/* 左側: ロゴ */}
+            <Link href="/" className="flex items-center flex-shrink-0 min-w-0 mr-2">
+              <div className="w-6 h-6 sm:w-10 sm:h-10 mr-1 sm:mr-3 flex-shrink-0">
                 <ThemeAwareLogo />
               </div>
-              <span className="font-bold text-xl text-gray-900 dark:text-white">CodeBook</span>
-            </div>
+              <span className="font-bold text-sm sm:text-xl text-gray-900 dark:text-white truncate">CodeBook</span>
+            </Link>
 
-            {/* 右側: ArtCodeメニュー・検索・プロフィール・投稿ボタン */}
-            <div className="flex items-center space-x-4">
-              {/* ArtCodeメニューボタン */}
-              <button className="flex items-center space-x-2 px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
-                <span className="font-medium text-sm">ArtCode</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M6 9l6 6 6-6"/>
-                </svg>
-              </button>
-
+            {/* 右側: ボタン群 */}
+            <div className="flex items-center gap-0.5 sm:gap-2 flex-shrink-0">
               {/* 検索ボタン */}
               <Link
                 href="/search"
-                className="flex items-center space-x-2 px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex-shrink-0"
+                aria-label="検索"
               >
-                <SearchIcon />
-                <span className="text-sm font-medium">検索</span>
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.35-4.35"></path>
+                </svg>
               </Link>
 
               {/* テーマ切り替えボタン */}
-              <ThemeToggle />
+              <div className="flex-shrink-0">
+                <ThemeToggle />
+              </div>
 
-              {/* プロフィール */}
+              {/* プロフィール - PCのみ */}
               {isLoggedIn ? (
-                <button className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
+                <button className="hidden sm:flex items-center space-x-2 px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
                   <UserIcon size={20} />
                   <span className="text-sm font-medium">プロフィール</span>
                 </button>
               ) : (
                 <button
-                  className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium"
+                  className="hidden sm:block text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium px-3 py-2"
                   onClick={() => setIsLoggedIn(true)}
                 >
                   ログイン
@@ -301,15 +298,15 @@ export default function HomePage() {
               {/* 投稿ボタン */}
               <Link
                 href="/posts/create"
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors inline-block"
+                className="bg-blue-600 text-white px-2 py-1 sm:px-4 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium hover:bg-blue-700 transition-colors whitespace-nowrap flex-shrink-0"
               >
-                + 投稿
+                投稿
               </Link>
             </div>
           </div>
 
-          {/* タブナビゲーション（カラータブ） */}
-          <div className="flex space-x-8 border-b border-gray-200 dark:border-gray-700">
+          {/* タブナビゲーション */}
+          <div className="flex gap-3 sm:gap-8 border-b border-gray-200 dark:border-gray-700 overflow-x-auto scrollbar-hide">
             {tabItems.map((tab) => {
               const isActive = activeTab === tab.id;
               const colorClasses = {
@@ -322,7 +319,7 @@ export default function HomePage() {
               return (
                 <button
                   key={tab.id}
-                  className={`pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${colorClasses[tab.color as keyof typeof colorClasses]}`}
+                  className={`pb-2 sm:pb-4 px-0.5 sm:px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors whitespace-nowrap ${colorClasses[tab.color as keyof typeof colorClasses]}`}
                   onClick={() => setActiveTab(tab.id)}
                 >
                   {tab.label}
@@ -359,22 +356,22 @@ export default function HomePage() {
 
 
       {/* メインコンテンツ */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* トレンド・人気投稿セクション */}
-        <div className="mb-8">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+        <div className="mb-6 sm:mb-8">
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">
             トレンド・人気投稿
           </h2>
 
-          {/* 投稿グリッド（正方形、横に3つ、モバイルで2つ） */}
+          {/* 投稿グリッド - スマホは確実に1列 */}
           {loading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-6 mb-6 sm:mb-8">
               {Array(6).fill(0).map((_, i) => (
-                <div key={i} className="bg-gray-200 rounded-lg aspect-square animate-pulse"></div>
+                <div key={i} className="bg-gray-200 dark:bg-gray-700 rounded-lg h-auto min-h-[280px] sm:min-h-[300px] lg:aspect-square animate-pulse w-full max-w-full"></div>
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-6 mb-6 sm:mb-8">
               {trendingCodes.map((post) => (
                 <PostCard key={post.id} post={post} />
               ))}
@@ -391,17 +388,17 @@ export default function HomePage() {
 
         {/* 新規投稿セクション */}
         <div>
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">新規投稿</h2>
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">新規投稿</h2>
 
-          {/* 新規投稿グリッド */}
+          {/* 新規投稿グリッド - スマホは確実に1列 */}
           {loading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-6">
               {Array(6).fill(0).map((_, i) => (
-                <div key={i} className="bg-gray-200 rounded-lg aspect-square animate-pulse"></div>
+                <div key={i} className="bg-gray-200 dark:bg-gray-700 rounded-lg h-auto min-h-[280px] sm:min-h-[300px] lg:aspect-square animate-pulse w-full max-w-full"></div>
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-6">
               {newCodes.map((post) => (
                 <PostCard key={post.id} post={post} />
               ))}
