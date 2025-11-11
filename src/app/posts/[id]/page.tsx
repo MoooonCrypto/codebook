@@ -181,6 +181,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
   const [codeWidth, setCodeWidth] = useState(60);
   const [isResizing, setIsResizing] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [showDescriptionPanel, setShowDescriptionPanel] = useState(false);
 
   // 複数ファイル対応のためのサンプルデータ構造
   const mockFiles = post ? [
@@ -695,33 +696,31 @@ export default ApiClient;`,
     <div className="h-screen bg-white dark:bg-gray-900 flex flex-col overflow-hidden">
       {/* ヘッダー */}
       <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* 左側: アイコンロゴ */}
-            <div className="flex items-center">
-              <Link href="/" className="flex items-center">
-                <div className="w-10 h-10 mr-3">
-                  <ThemeAwareLogo />
-                </div>
-                <span className="font-bold text-xl text-gray-900 dark:text-white">CodeBook</span>
-              </Link>
-            </div>
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+          <div className="flex items-center justify-between h-11 sm:h-16">
+            {/* 左側: ロゴ */}
+            <Link href="/" className="flex items-center flex-shrink-0 min-w-0 mr-2">
+              <div className="w-6 h-6 sm:w-10 sm:h-10 mr-1 sm:mr-3 flex-shrink-0">
+                <ThemeAwareLogo />
+              </div>
+              <span className="font-bold text-sm sm:text-xl text-gray-900 dark:text-white truncate">CodeBook</span>
+            </Link>
 
-            {/* 右側: メニュー */}
-            <div className="flex items-center space-x-4">
+            {/* 右側: ボタン群 */}
+            <div className="flex items-center gap-0.5 sm:gap-2 flex-shrink-0">
               {/* 検索ボタン */}
               <Link
                 href="/search"
-                className="flex items-center space-x-2 px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex-shrink-0"
+                aria-label="検索"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
-                <span className="text-sm font-medium">検索</span>
               </Link>
 
-              {/* プロフィール */}
-              <button className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
+              {/* プロフィール - PCのみ */}
+              <button className="hidden sm:flex items-center space-x-2 px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                   <circle cx="12" cy="7" r="4"></circle>
@@ -732,13 +731,15 @@ export default ApiClient;`,
               {/* 投稿ボタン */}
               <Link
                 href="/posts/create"
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors inline-block"
+                className="bg-blue-600 text-white px-2 py-1 sm:px-4 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium hover:bg-blue-700 transition-colors whitespace-nowrap flex-shrink-0"
               >
-                + 投稿
+                投稿
               </Link>
 
               {/* テーマ切り替えボタン */}
-              <ThemeToggle />
+              <div className="flex-shrink-0">
+                <ThemeToggle />
+              </div>
             </div>
           </div>
         </div>
@@ -746,46 +747,45 @@ export default ApiClient;`,
 
       {/* タイトルエリア */}
       <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            {/* 左側: タイトルと設定タグ */}
-            <div className="flex-1">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                {post.title}
-              </h1>
-              <div className="flex flex-wrap gap-2">
-                {post.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-xs font-medium"
-                  >
-                    #{tag}
-                  </span>
-                ))}
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-4">
+          {/* タイトルと設定タグ */}
+          <div className="mb-3">
+            <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">
+              {post.title}
+            </h1>
+            <div className="flex flex-wrap gap-1.5 sm:gap-2">
+              {post.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-xs font-medium"
+                >
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* 投稿者プロフ情報とアクション */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="flex items-center space-x-2">
+              <Image
+                src={author.avatar}
+                alt={author.displayName}
+                width={32}
+                height={32}
+                className="rounded-full flex-shrink-0"
+                unoptimized
+              />
+              <div className="min-w-0">
+                <div className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                  {author.displayName}
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 truncate">@{author.username}</div>
               </div>
             </div>
 
-            {/* 右側: 投稿者プロフ情報 */}
-            <div className="flex items-center space-x-4 ml-8">
-              <div className="flex items-center space-x-2">
-                <Image
-                  src={author.avatar}
-                  alt={author.displayName}
-                  width={32}
-                  height={32}
-                  className="rounded-full"
-                  unoptimized
-                />
-                <div>
-                  <div className="text-sm font-semibold text-gray-900 dark:text-white">
-                    {author.displayName}
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">@{author.username}</div>
-                </div>
-              </div>
-
-              {/* いいね・ブックマーク */}
-              <div className="flex items-center space-x-2">
+            {/* いいね・ブックマーク */}
+            <div className="flex items-center space-x-2 flex-shrink-0">
                 <button
                   className={`flex items-center space-x-1 px-2 py-1 rounded text-xs transition-colors ${
                     isLiked
@@ -811,12 +811,11 @@ export default ApiClient;`,
             </div>
           </div>
         </div>
-      </div>
 
       {/* メインコンテンツエリア */}
       <div className="flex-1 flex overflow-hidden relative main-content">
-        {/* VSCode風左サイドバー */}
-        <div className="w-12 bg-gray-800 dark:bg-gray-950 border-r border-white/20 dark:border-gray-600 flex flex-col items-center py-2 space-y-1 flex-shrink-0">
+        {/* VSCode風左サイドバー - PC表示のみ */}
+        <div className="hidden md:flex w-12 bg-gray-800 dark:bg-gray-950 border-r border-white/20 dark:border-gray-600 flex-col items-center py-2 space-y-1 flex-shrink-0">
           <button
             className={`p-2 rounded hover:bg-gray-700 dark:hover:bg-gray-800 transition-colors ${
               activeMenu === 'files' ? 'bg-gray-700 dark:bg-gray-800 text-white' : 'text-gray-400 dark:text-gray-500'
@@ -859,9 +858,32 @@ export default ApiClient;`,
           </button>
         </div>
 
+        {/* ファイル一覧トグルボタン - モバイルのみ */}
+        <button
+          className="md:hidden fixed top-14 left-2 z-50 bg-gray-800 dark:bg-gray-900 text-white p-2 rounded-lg shadow-lg"
+          onClick={() => {
+            setActiveMenu(activeMenu === 'files' ? null : 'files');
+            setShowFileList(activeMenu !== 'files');
+          }}
+          aria-label="ファイル一覧"
+        >
+          <FolderIcon size={16} />
+        </button>
+
+        {/* 説明パネルトグルボタン - モバイルのみ */}
+        <button
+          className="md:hidden fixed top-14 right-2 z-50 bg-white dark:bg-gray-900 text-gray-900 dark:text-white p-2 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700"
+          onClick={() => setShowDescriptionPanel(!showDescriptionPanel)}
+          aria-label="説明パネル"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        </button>
+
         {/* ソースコード表示エリア */}
         <div className="flex-1 flex overflow-hidden">
-          <div className="bg-gray-900 dark:bg-gray-950 flex flex-col relative" style={{ width: `${codeWidth}%` }}>
+          <div className="bg-gray-900 dark:bg-gray-950 flex flex-col relative w-full" style={{ width: `${codeWidth}%` }}>
             {/* ファイル一覧オーバーレイ */}
             {showFileList && activeMenu === 'files' && (
               <div className="absolute top-0 left-0 bottom-0 w-64 bg-gray-800 dark:bg-gray-900 border-r border-white/20 dark:border-gray-600 z-10 shadow-lg">
@@ -929,16 +951,39 @@ export default ApiClient;`,
             </div>
           </div>
 
-          {/* リサイズバー */}
+          {/* リサイズバー - PC表示のみ */}
           <div
-            className="w-1 bg-gray-300 dark:bg-gray-600 hover:bg-blue-500 dark:hover:bg-blue-400 cursor-col-resize flex-shrink-0 relative group"
+            className="hidden md:block w-1 bg-gray-300 dark:bg-gray-600 hover:bg-blue-500 dark:hover:bg-blue-400 cursor-col-resize flex-shrink-0 relative group"
             onMouseDown={() => setIsResizing(true)}
           >
             <div className="absolute inset-0 w-4 -ml-1.5 group-hover:bg-blue-500/20 dark:group-hover:bg-blue-400/20"></div>
           </div>
 
-          {/* 説明文エリア（独立スクロール） */}
-          <div className="bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 flex flex-col" style={{ width: `${100 - codeWidth}%` }}>
+          {/* 説明文エリア（独立スクロール） - PCは通常表示、モバイルは絶対配置 */}
+          <div
+            className={`
+              bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 flex flex-col
+              md:relative md:block
+              ${showDescriptionPanel ? 'fixed' : 'hidden md:flex'}
+              ${showDescriptionPanel ? 'inset-0 z-40' : ''}
+            `}
+            style={{ width: showDescriptionPanel ? '100%' : `${100 - codeWidth}%` }}
+          >
+            {/* モバイル用閉じるボタン */}
+            {showDescriptionPanel && (
+              <div className="md:hidden flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+                <h2 className="text-lg font-bold text-gray-900 dark:text-white">説明</h2>
+                <button
+                  onClick={() => setShowDescriptionPanel(false)}
+                  className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                  aria-label="閉じる"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            )}
             <div className="flex-1 overflow-auto p-6">
               <div className="prose prose-sm max-w-none">
                 <div className="text-gray-700 dark:text-gray-300 leading-relaxed space-y-4">
