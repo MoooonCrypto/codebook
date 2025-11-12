@@ -146,7 +146,7 @@ function SearchPageContent() {
                 {/* 投稿ボタン */}
                 <Link
                   href="/posts/create"
-                  className="bg-blue-600 text-white px-2 py-1 sm:px-4 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium hover:bg-blue-700 transition-colors whitespace-nowrap flex-shrink-0"
+                  className="bg-gray-700 dark:bg-gray-600 text-white px-2 py-1 sm:px-4 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors whitespace-nowrap flex-shrink-0"
                 >
                   投稿
                 </Link>
@@ -276,7 +276,7 @@ function SearchPageContent() {
               {/* 投稿ボタン */}
               <Link
                 href="/posts/create"
-                className="bg-blue-600 text-white px-2 py-1 sm:px-4 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium hover:bg-blue-700 transition-colors whitespace-nowrap flex-shrink-0"
+                className="bg-gray-700 dark:bg-gray-600 text-white px-2 py-1 sm:px-4 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors whitespace-nowrap flex-shrink-0"
               >
                 投稿
               </Link>

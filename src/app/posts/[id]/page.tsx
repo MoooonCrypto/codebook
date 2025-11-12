@@ -185,7 +185,12 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
   const [isResizing, setIsResizing] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [showDescriptionPanel, setShowDescriptionPanel] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return document.documentElement.classList.contains('dark');
+    }
+    return false;
+  });
 
   // 複数ファイル対応のためのサンプルデータ構造
   const mockFiles = post ? [
@@ -758,7 +763,7 @@ export default ApiClient;`,
               {/* 投稿ボタン */}
               <Link
                 href="/posts/create"
-                className="bg-blue-600 text-white px-2 py-1 sm:px-4 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium hover:bg-blue-700 transition-colors whitespace-nowrap flex-shrink-0"
+                className="bg-gray-700 dark:bg-gray-600 text-white px-2 py-1 sm:px-4 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors whitespace-nowrap flex-shrink-0"
               >
                 投稿
               </Link>
@@ -827,7 +832,7 @@ export default ApiClient;`,
                 <button
                   className={`p-1 rounded transition-colors ${
                     isBookmarked
-                      ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                      ? 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200'
                       : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                   onClick={() => setIsBookmarked(!isBookmarked)}
@@ -911,7 +916,7 @@ export default ApiClient;`,
         {/* ソースコード表示エリア */}
         <div className="flex-1 flex">
           <div
-            className={`code-display-area bg-gray-900 dark:bg-gray-950 flex flex-col relative ${showDescriptionPanel ? 'hidden' : ''}`}
+            className={`code-display-area bg-gray-100 dark:bg-gray-950 flex flex-col relative ${showDescriptionPanel ? 'hidden' : ''}`}
             style={{
               minHeight: '500px',
               width: showDescriptionPanel ? '0' : '100%'
@@ -956,17 +961,17 @@ export default ApiClient;`,
             )}
 
             {/* コードヘッダー */}
-            <div className="flex items-center justify-between px-4 py-2 bg-gray-800 dark:bg-gray-900 flex-shrink-0">
+            <div className="flex items-center justify-between px-4 py-2 bg-gray-200 dark:bg-gray-900 flex-shrink-0">
               <div className="flex items-center space-x-2">
-                <span className="text-sm font-medium text-gray-300 dark:text-gray-400">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-400">
                   {mockFiles[selectedFile]?.name}
                 </span>
-                <span className="text-xs px-2 py-0.5 bg-gray-700 dark:bg-gray-800 text-gray-300 dark:text-gray-400 rounded">
+                <span className="text-xs px-2 py-0.5 bg-gray-300 dark:bg-gray-800 text-gray-700 dark:text-gray-400 rounded">
                   {mockFiles[selectedFile]?.language}
                 </span>
               </div>
               <button
-                className="flex items-center space-x-2 px-2 py-1 bg-gray-700 dark:bg-gray-800 hover:bg-gray-600 dark:hover:bg-gray-700 text-gray-300 dark:text-gray-400 rounded text-xs transition-colors"
+                className="flex items-center space-x-2 px-2 py-1 bg-gray-300 dark:bg-gray-800 hover:bg-gray-400 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-400 rounded text-xs transition-colors"
                 onClick={handleCopyCode}
               >
                 <CopyIcon size={14} />
@@ -1002,16 +1007,16 @@ export default ApiClient;`,
 
           {/* リサイズバー - PC表示のみ */}
           <div
-            className="hidden md:block w-px bg-gray-200 dark:bg-gray-700 hover:bg-blue-400 dark:hover:bg-blue-500 cursor-col-resize flex-shrink-0 relative group"
+            className="hidden md:block w-px bg-gray-200 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-500 cursor-col-resize flex-shrink-0 relative group"
             onMouseDown={() => setIsResizing(true)}
           >
-            <div className="absolute inset-0 w-4 -ml-2 group-hover:bg-blue-500/10 dark:group-hover:bg-blue-400/10"></div>
+            <div className="absolute inset-0 w-2 -ml-1 group-hover:bg-gray-400/20 dark:group-hover:bg-gray-500/20"></div>
           </div>
 
           {/* 説明文エリア（独立スクロール） - PCは通常表示、モバイルは絶対配置 */}
           <div
             className={`
-              bg-white dark:bg-gray-900 flex flex-col
+              bg-gray-50 dark:bg-gray-900 flex flex-col
               ${showDescriptionPanel ? 'fixed inset-0 z-40 border-l border-gray-200 dark:border-gray-700' : 'hidden md:flex'}
             `}
             style={{
@@ -1020,7 +1025,7 @@ export default ApiClient;`,
           >
             {/* モバイル用閉じるボタン */}
             {showDescriptionPanel && (
-              <div className="md:hidden flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+              <div className="md:hidden flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
                 <h2 className="text-lg font-bold text-gray-900 dark:text-white">説明</h2>
                 <button
                   onClick={() => setShowDescriptionPanel(false)}
