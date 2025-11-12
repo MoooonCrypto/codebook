@@ -639,6 +639,11 @@ export default ApiClient;`,
     loadPostData();
   }, [params]);
 
+  // codeWidthをCSSカスタムプロパティとして設定
+  useEffect(() => {
+    document.documentElement.style.setProperty('--code-width', `${codeWidth}%`);
+  }, [codeWidth]);
+
   // リサイズ機能
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -693,7 +698,7 @@ export default ApiClient;`,
   }
 
   return (
-    <div className="h-screen bg-white dark:bg-gray-900 flex flex-col overflow-hidden">
+    <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col">
       {/* ヘッダー */}
       <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
         <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
@@ -813,7 +818,7 @@ export default ApiClient;`,
         </div>
 
       {/* メインコンテンツエリア */}
-      <div className="flex-1 flex overflow-hidden relative main-content">
+      <div className="flex-1 flex relative main-content" style={{ minHeight: 'calc(100vh - 200px)' }}>
         {/* VSCode風左サイドバー - PC表示のみ */}
         <div className="hidden md:flex w-12 bg-gray-800 dark:bg-gray-950 border-r border-white/20 dark:border-gray-600 flex-col items-center py-2 space-y-1 flex-shrink-0">
           <button
@@ -882,8 +887,14 @@ export default ApiClient;`,
         </button>
 
         {/* ソースコード表示エリア */}
-        <div className="flex-1 flex overflow-hidden">
-          <div className="bg-gray-900 dark:bg-gray-950 flex flex-col relative w-full" style={{ width: `${codeWidth}%` }}>
+        <div className="flex-1 flex">
+          <div
+            className={`code-display-area bg-gray-900 dark:bg-gray-950 flex flex-col relative ${showDescriptionPanel ? 'hidden' : ''}`}
+            style={{
+              minHeight: '500px',
+              width: showDescriptionPanel ? '0' : '100%'
+            }}
+          >
             {/* ファイル一覧オーバーレイ */}
             {showFileList && activeMenu === 'files' && (
               <div className="absolute top-0 left-0 bottom-0 w-64 bg-gray-800 dark:bg-gray-900 border-r border-white/20 dark:border-gray-600 z-10 shadow-lg">
@@ -963,11 +974,12 @@ export default ApiClient;`,
           <div
             className={`
               bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 flex flex-col
-              md:relative md:block
-              ${showDescriptionPanel ? 'fixed' : 'hidden md:flex'}
-              ${showDescriptionPanel ? 'inset-0 z-40' : ''}
+              ${showDescriptionPanel ? 'fixed inset-0 z-40' : 'hidden md:flex'}
             `}
-            style={{ width: showDescriptionPanel ? '100%' : `${100 - codeWidth}%` }}
+            style={{
+              width: showDescriptionPanel ? '100%' : `${100 - codeWidth}%`,
+              minHeight: '500px'
+            }}
           >
             {/* モバイル用閉じるボタン */}
             {showDescriptionPanel && (

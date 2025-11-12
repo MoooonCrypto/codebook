@@ -111,15 +111,15 @@ function SearchPageContent() {
     return (
       <div className="min-h-screen bg-white dark:bg-gray-900">
         {/* グローバルヘッダー */}
-        <header className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800 sticky top-0 z-50 shadow-sm dark:shadow-gray-950/30">
+        <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
             <div className="flex items-center justify-between h-11 sm:h-16">
               {/* 左側: ロゴ */}
-              <Link href="/" className="group flex items-center flex-shrink-0 min-w-0 mr-2">
-                <div className="w-6 h-6 sm:w-10 sm:h-10 mr-1 sm:mr-3 flex-shrink-0 transform group-hover:scale-110 transition-transform duration-200">
+              <Link href="/" className="flex items-center flex-shrink-0 min-w-0 mr-2">
+                <div className="w-6 h-6 sm:w-10 sm:h-10 mr-1 sm:mr-3 flex-shrink-0">
                   <ThemeAwareLogo />
                 </div>
-                <span className="font-bold text-sm sm:text-xl bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent truncate">CodeBook</span>
+                <span className="font-bold text-sm sm:text-xl text-gray-900 dark:text-white truncate">CodeBook</span>
               </Link>
 
               {/* 右側: ボタン群 */}
@@ -127,7 +127,7 @@ function SearchPageContent() {
                 {/* 検索ボタン - アクティブ */}
                 <Link
                   href="/search"
-                  className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 text-blue-600 dark:text-blue-400 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg flex-shrink-0 shadow-sm hover:shadow-md transform hover:scale-105 transition-all duration-200 border border-blue-200 dark:border-blue-800"
+                  className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex-shrink-0"
                   aria-label="検索"
                 >
                   <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -136,7 +136,7 @@ function SearchPageContent() {
                 </Link>
 
                 {/* プロフィール - PCのみ */}
-                <button className="hidden sm:flex items-center space-x-2 px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+                <button className="hidden sm:flex items-center space-x-2 px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
@@ -146,7 +146,7 @@ function SearchPageContent() {
                 {/* 投稿ボタン */}
                 <Link
                   href="/posts/create"
-                  className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 dark:from-blue-500 dark:to-blue-600 dark:hover:from-blue-600 dark:hover:to-blue-700 text-white px-2 py-1 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 whitespace-nowrap flex-shrink-0"
+                  className="bg-blue-600 text-white px-2 py-1 sm:px-4 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium hover:bg-blue-700 transition-colors whitespace-nowrap flex-shrink-0"
                 >
                   投稿
                 </Link>
@@ -156,24 +156,24 @@ function SearchPageContent() {
         </header>
 
         {/* 検索キーワード表示（小さく） */}
-        <div className="bg-gradient-to-r from-gray-50 to-white dark:from-gray-800 dark:to-gray-850 border-b border-gray-200 dark:border-gray-700 py-4">
+        <div className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 py-3">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 {isLanguageSearch ? (
                   <>
-                    <span className="text-2xl">{languageIcons[currentSearchTerm.toLowerCase()] || '💻'}</span>
-                    <span className="text-lg font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent capitalize">
+                    <span className="text-xl">{languageIcons[currentSearchTerm.toLowerCase()] || '💻'}</span>
+                    <span className="text-lg font-medium text-gray-900 dark:text-gray-100 capitalize">
                       {currentSearchTerm}
                     </span>
                   </>
                 ) : (
-                  <span className="text-lg font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                  <span className="text-lg font-medium text-gray-900 dark:text-gray-100">
                     「{currentSearchTerm}」
                   </span>
                 )}
               </div>
-              <span className="text-sm font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">
+              <span className="text-sm text-gray-600 dark:text-gray-400">
                 {searchResults.length} 件
               </span>
             </div>
@@ -185,7 +185,7 @@ function SearchPageContent() {
           {isLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-6">
               {Array(6).fill(0).map((_, i) => (
-                <div key={i} className="bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 rounded-xl h-auto min-h-[280px] sm:min-h-[300px] lg:aspect-square animate-pulse w-full max-w-full shadow-sm"></div>
+                <div key={i} className="bg-gray-200 dark:bg-gray-700 rounded-lg h-auto min-h-[280px] sm:min-h-[300px] lg:aspect-square animate-pulse w-full max-w-full"></div>
               ))}
             </div>
           ) : searchResults.length > 0 ? (
@@ -244,28 +244,28 @@ function SearchPageContent() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
       {/* グローバルヘッダー */}
-      <header className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800 sticky top-0 z-50 shadow-sm dark:shadow-gray-950/30">
+      <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
           <div className="flex items-center justify-between h-11 sm:h-16">
             {/* 左側: ロゴ */}
-            <Link href="/" className="group flex items-center flex-shrink-0 min-w-0 mr-2">
-              <div className="w-6 h-6 sm:w-10 sm:h-10 mr-1 sm:mr-3 flex-shrink-0 transform group-hover:scale-110 transition-transform duration-200">
+            <Link href="/" className="flex items-center flex-shrink-0 min-w-0 mr-2">
+              <div className="w-6 h-6 sm:w-10 sm:h-10 mr-1 sm:mr-3 flex-shrink-0">
                 <ThemeAwareLogo />
               </div>
-              <span className="font-bold text-sm sm:text-xl bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent truncate">CodeBook</span>
+              <span className="font-bold text-sm sm:text-xl text-gray-900 dark:text-white truncate">CodeBook</span>
             </Link>
 
             {/* 右側: ボタン群 */}
             <div className="flex items-center gap-0.5 sm:gap-2 flex-shrink-0">
               {/* 検索ボタン（現在のページなのでアクティブ表示） */}
-              <span className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 text-blue-600 dark:text-blue-400 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg flex-shrink-0 shadow-sm border border-blue-200 dark:border-blue-800">
+              <span className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex-shrink-0">
                 <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </span>
 
               {/* プロフィール - PCのみ */}
-              <button className="hidden sm:flex items-center space-x-2 px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+              <button className="hidden sm:flex items-center space-x-2 px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                   <circle cx="12" cy="7" r="4"></circle>
@@ -276,7 +276,7 @@ function SearchPageContent() {
               {/* 投稿ボタン */}
               <Link
                 href="/posts/create"
-                className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 dark:from-blue-500 dark:to-blue-600 dark:hover:from-blue-600 dark:hover:to-blue-700 text-white px-2 py-1 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 whitespace-nowrap flex-shrink-0"
+                className="bg-blue-600 text-white px-2 py-1 sm:px-4 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium hover:bg-blue-700 transition-colors whitespace-nowrap flex-shrink-0"
               >
                 投稿
               </Link>
@@ -286,13 +286,13 @@ function SearchPageContent() {
       </header>
 
       {/* 検索コンテンツ */}
-      <div className="bg-gradient-to-r from-gray-50 to-white dark:from-gray-800 dark:to-gray-850 border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <div className="max-w-6xl mx-auto px-4 py-6">
           <div className="text-center mb-6">
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent mb-3">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
               コード検索
             </h1>
-            <p className="text-gray-600 dark:text-gray-400 text-lg">
+            <p className="text-gray-600 dark:text-gray-400 mt-2">
               タグや言語からコードを探す
             </p>
           </div>
@@ -310,27 +310,22 @@ function SearchPageContent() {
       <div className="max-w-6xl mx-auto px-4 py-6">
         <div className="space-y-6">
           {/* 人気タグ */}
-          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-6">
-            <div className="flex items-center mb-4">
-              <div className="h-6 w-1 bg-gradient-to-b from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 rounded-full mr-3"></div>
-              <h3 className="text-lg font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-                人気のタグ
-              </h3>
-            </div>
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+              人気のタグ
+            </h3>
             <div className="flex flex-wrap gap-2">
               {popularTags.map(({ tag, count }) => (
                 <button
                   key={tag}
                   onClick={() => handleTagClick(tag)}
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm
-                           bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20
-                           hover:from-blue-100 hover:to-purple-100 dark:hover:from-blue-900/40 dark:hover:to-purple-900/40
-                           text-blue-700 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-200
-                           rounded-full font-medium border border-blue-200 dark:border-blue-800
-                           shadow-sm hover:shadow-md transform hover:scale-105 transition-all duration-200"
+                  className="inline-flex items-center gap-1 px-3 py-1 text-sm
+                           bg-gray-100 dark:bg-gray-700 hover:bg-blue-100 dark:hover:bg-blue-900
+                           text-gray-700 dark:text-gray-300 hover:text-blue-800 dark:hover:text-blue-200
+                           rounded-full transition-colors"
                 >
                   #{tag}
-                  <span className="text-xs bg-blue-100 dark:bg-blue-800 px-2 py-0.5 rounded-full">
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
                     {count}
                   </span>
                 </button>

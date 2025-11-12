@@ -101,3 +101,10 @@ body {
 .dark .code-area::-webkit-scrollbar-thumb:hover {
   background: #6b7280;
 }
+
+/* PC表示時のコードエリアの幅 */
+@media (min-width: 768px) {
+  .code-display-area {
+    width: var(--code-width, 60%) !important;
+  }
+}
