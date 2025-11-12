@@ -818,7 +818,7 @@ export default ApiClient;`,
         </div>
 
       {/* メインコンテンツエリア */}
-      <div className="flex-1 flex relative main-content" style={{ minHeight: 'calc(100vh - 200px)' }}>
+      <div className="flex-1 flex overflow-hidden relative main-content" style={{ minHeight: 'calc(100vh - 200px)' }}>
         {/* VSCode風左サイドバー - PC表示のみ */}
         <div className="hidden md:flex w-12 bg-gray-800 dark:bg-gray-950 border-r border-white/20 dark:border-gray-600 flex-col items-center py-2 space-y-1 flex-shrink-0">
           <button
@@ -964,21 +964,20 @@ export default ApiClient;`,
 
           {/* リサイズバー - PC表示のみ */}
           <div
-            className="hidden md:block w-1 bg-gray-300 dark:bg-gray-600 hover:bg-blue-500 dark:hover:bg-blue-400 cursor-col-resize flex-shrink-0 relative group"
+            className="hidden md:block w-px bg-gray-200 dark:bg-gray-700 hover:bg-blue-400 dark:hover:bg-blue-500 cursor-col-resize flex-shrink-0 relative group"
             onMouseDown={() => setIsResizing(true)}
           >
-            <div className="absolute inset-0 w-4 -ml-1.5 group-hover:bg-blue-500/20 dark:group-hover:bg-blue-400/20"></div>
+            <div className="absolute inset-0 w-4 -ml-2 group-hover:bg-blue-500/10 dark:group-hover:bg-blue-400/10"></div>
           </div>
 
           {/* 説明文エリア（独立スクロール） - PCは通常表示、モバイルは絶対配置 */}
           <div
             className={`
-              bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 flex flex-col
-              ${showDescriptionPanel ? 'fixed inset-0 z-40' : 'hidden md:flex'}
+              bg-white dark:bg-gray-900 flex flex-col
+              ${showDescriptionPanel ? 'fixed inset-0 z-40 border-l border-gray-200 dark:border-gray-700' : 'hidden md:flex'}
             `}
             style={{
-              width: showDescriptionPanel ? '100%' : `${100 - codeWidth}%`,
-              minHeight: '500px'
+              width: showDescriptionPanel ? '100%' : `${100 - codeWidth}%`
             }}
           >
             {/* モバイル用閉じるボタン */}
