@@ -702,19 +702,36 @@ export default ApiClient;`,
 
   // コードエリアのスクロール監視
   useEffect(() => {
-    const codeArea = document.querySelector('.code-area');
-    if (!codeArea) return;
+    // DOMが完全に描画されるまで少し待つ
+    const timer = setTimeout(() => {
+      const codeArea = document.querySelector('.code-area');
+      if (!codeArea) {
+        console.log('code-area not found');
+        return;
+      }
 
-    const handleScroll = () => {
-      const scrollTop = codeArea.scrollTop;
-      const scrollHeight = codeArea.scrollHeight - codeArea.clientHeight;
-      const percentage = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
-      setScrollPercentage(percentage);
-    };
+      const handleScroll = () => {
+        const scrollTop = codeArea.scrollTop;
+        const scrollHeight = codeArea.scrollHeight - codeArea.clientHeight;
+        const percentage = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+        setScrollPercentage(percentage);
+        console.log('Scroll:', { scrollTop, scrollHeight, percentage });
+      };
 
-    codeArea.addEventListener('scroll', handleScroll);
-    return () => codeArea.removeEventListener('scroll', handleScroll);
-  }, [selectedFile]);
+      // 初期位置を設定
+      handleScroll();
+
+      codeArea.addEventListener('scroll', handleScroll);
+      console.log('Scroll listener attached');
+
+      return () => {
+        codeArea.removeEventListener('scroll', handleScroll);
+        console.log('Scroll listener removed');
+      };
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [selectedFile, post]);
 
   const handleCopyCode = async () => {
     const currentFile = mockFiles[selectedFile];
@@ -731,11 +748,15 @@ export default ApiClient;`,
 
   const handleMinimapClick = (clickPercentage: number) => {
     const codeArea = document.querySelector('.code-area');
-    if (!codeArea) return;
+    if (!codeArea) {
+      console.log('code-area not found for minimap click');
+      return;
+    }
 
     const scrollHeight = codeArea.scrollHeight - codeArea.clientHeight;
     const targetScroll = (clickPercentage / 100) * scrollHeight;
     codeArea.scrollTop = targetScroll;
+    console.log('Minimap click:', { clickPercentage, scrollHeight, targetScroll });
   };
 
   if (loading) {
@@ -940,9 +961,9 @@ export default ApiClient;`,
         </button>
 
         {/* ソースコード表示エリア */}
-        <div className="flex-1 flex">
+        <div className="flex-1 flex overflow-hidden">
           <div
-            className={`code-display-area bg-[#1e1e1e] flex flex-col relative ${showDescriptionPanel ? 'hidden' : ''}`}
+            className={`code-display-area bg-[#1e1e1e] flex flex-col relative overflow-hidden ${showDescriptionPanel ? 'hidden' : ''}`}
             style={{
               minHeight: '500px',
               width: showDescriptionPanel ? '0' : '100%'
@@ -1088,7 +1109,7 @@ export default ApiClient;`,
           {/* 説明文エリア（独立スクロール） - PCは通常表示、モバイルは絶対配置 */}
           <div
             className={`
-              bg-gray-50 dark:bg-gray-900 flex flex-col
+              bg-gray-50 dark:bg-gray-900 flex flex-col overflow-hidden
               ${showDescriptionPanel ? 'fixed inset-0 z-40 border-l border-gray-200 dark:border-gray-700' : 'hidden md:flex'}
             `}
             style={{
