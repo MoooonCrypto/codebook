@@ -915,7 +915,7 @@ export default ApiClient;`,
         {/* ソースコード表示エリア */}
         <div className="flex-1 flex">
           <div
-            className={`code-display-area bg-[#1e1e1e] flex flex-col relative ${showDescriptionPanel ? 'hidden' : ''}`}
+            className={`code-display-area bg-[#1e1e1e] flex flex-col overflow-hidden relative ${showDescriptionPanel ? 'hidden' : ''}`}
             style={{
               minHeight: '500px',
               width: showDescriptionPanel ? '0' : '100%'
@@ -1015,7 +1015,7 @@ export default ApiClient;`,
           {/* 説明文エリア（独立スクロール） - PCは通常表示、モバイルは絶対配置 */}
           <div
             className={`
-              bg-gray-50 dark:bg-gray-900 flex flex-col
+              bg-gray-50 dark:bg-gray-900 flex flex-col overflow-hidden
               ${showDescriptionPanel ? 'fixed inset-0 z-40 border-l border-gray-200 dark:border-gray-700' : 'hidden md:flex'}
             `}
             style={{
