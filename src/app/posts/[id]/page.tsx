@@ -252,6 +252,8 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [showTextPanel, setShowTextPanel] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
+  const [imageTargetFile, setImageTargetFile] = useState(0);
+  const [imageBgColor, setImageBgColor] = useState('linear-gradient(135deg, #667eea 0%, #764ba2 100%)');
 
   // 複数ファイル対応のためのサンプルデータ構造
   const mockFiles = post ? [
@@ -739,6 +741,32 @@ export default ApiClient;`,
     window.open(`https://b.hatena.ne.jp/entry/panel/?url=${url}&title=${title}`, '_blank');
   };
 
+  const handleDownloadImage = async () => {
+    const { toPng } = await import('html-to-image');
+    const element = document.getElementById('code-image-preview');
+    if (!element) return;
+
+    try {
+      const dataUrl = await toPng(element, {
+        quality: 1,
+        pixelRatio: 2,
+      });
+
+      const link = document.createElement('a');
+      link.download = `${mockFiles[imageTargetFile]?.name || 'code'}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (error) {
+      console.error('Failed to generate image:', error);
+    }
+  };
+
+  // モーダルを開いたときに現在のファイルを選択
+  const handleOpenImageModal = () => {
+    setImageTargetFile(selectedFile);
+    setShowImageModal(true);
+  };
+
   if (loading) {
     return (
       <div className="h-screen bg-white dark:bg-gray-900 flex items-center justify-center">
@@ -988,7 +1016,7 @@ export default ApiClient;`,
                 </button>
                 <button
                   className="flex items-center space-x-2 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs transition-colors font-medium"
-                  onClick={() => setShowImageModal(true)}
+                  onClick={handleOpenImageModal}
                 >
                   <ImageIcon size={14} />
                   <span>画像共有</span>
@@ -1161,6 +1189,162 @@ export default ApiClient;`,
           )}
         </div>
       </div>
+
+      {/* 画像共有モーダル */}
+      {showImageModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+          <div className="bg-white dark:bg-gray-900 rounded-lg shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            {/* モーダルヘッダー */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">コード画像を作成</h2>
+              <button
+                onClick={() => setShowImageModal(false)}
+                className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* モーダルボディ */}
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+              {/* 設定エリア */}
+              <div className="mb-6 space-y-4">
+                {/* ファイル選択 */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    対象ファイル
+                  </label>
+                  <select
+                    value={imageTargetFile}
+                    onChange={(e) => setImageTargetFile(Number(e.target.value))}
+                    className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    {mockFiles.map((file, index) => (
+                      <option key={index} value={index}>
+                        {file.name} ({file.language})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* 背景色選択 */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    背景スタイル
+                  </label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {[
+                      { name: 'パープル', value: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
+                      { name: 'オーシャン', value: 'linear-gradient(135deg, #00c6fb 0%, #005bea 100%)' },
+                      { name: 'サンセット', value: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
+                      { name: 'フォレスト', value: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' },
+                      { name: 'ファイア', value: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' },
+                      { name: 'ナイト', value: 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)' },
+                      { name: 'ローズ', value: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)' },
+                      { name: 'カーボン', value: '#1e1e1e' },
+                    ].map((bg) => (
+                      <button
+                        key={bg.name}
+                        onClick={() => setImageBgColor(bg.value)}
+                        className={`relative h-12 rounded-lg border-2 transition-all ${
+                          imageBgColor === bg.value
+                            ? 'border-blue-500 scale-105'
+                            : 'border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                        }`}
+                        style={{ background: bg.value }}
+                      >
+                        <span className="absolute inset-0 flex items-center justify-center text-xs font-medium text-white drop-shadow-lg">
+                          {bg.name}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* プレビューエリア */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  プレビュー
+                </label>
+                <div
+                  id="code-image-preview"
+                  className="rounded-xl shadow-2xl overflow-hidden"
+                  style={{
+                    background: imageBgColor,
+                    padding: '60px',
+                  }}
+                >
+                  <div className="bg-[#1e1e1e] rounded-lg shadow-xl overflow-hidden">
+                    {/* ウィンドウコントロール */}
+                    <div className="flex items-center space-x-2 px-4 py-3 bg-[#2d2d2d]">
+                      <div className="flex space-x-2">
+                        <div className="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
+                        <div className="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
+                        <div className="w-3 h-3 rounded-full bg-[#27c93f]"></div>
+                      </div>
+                      <div className="flex-1 text-center">
+                        <span className="text-sm text-gray-400">{mockFiles[imageTargetFile]?.name}</span>
+                      </div>
+                    </div>
+
+                    {/* コード表示 */}
+                    <div className="p-6">
+                      <SyntaxHighlighter
+                        language={mockFiles[imageTargetFile]?.language.toLowerCase()}
+                        style={vscDarkPlus}
+                        customStyle={{
+                          margin: 0,
+                          padding: 0,
+                          background: 'transparent',
+                          fontSize: '14px',
+                          lineHeight: '1.6',
+                        }}
+                        showLineNumbers={true}
+                        lineNumberStyle={{
+                          minWidth: '3em',
+                          paddingRight: '1em',
+                          color: '#858585',
+                          userSelect: 'none',
+                        }}
+                      >
+                        {mockFiles[imageTargetFile]?.code || ''}
+                      </SyntaxHighlighter>
+                    </div>
+
+                    {/* フッター */}
+                    <div className="px-6 py-3 bg-[#2d2d2d] border-t border-[#3e3e3e]">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-gray-400">CodeBook - {post?.title}</span>
+                        <span className="text-xs text-gray-500">{mockFiles[imageTargetFile]?.language}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* モーダルフッター */}
+            <div className="flex items-center justify-end space-x-3 p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+              <button
+                onClick={() => setShowImageModal(false)}
+                className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              >
+                キャンセル
+              </button>
+              <button
+                onClick={handleDownloadImage}
+                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center space-x-2"
+              >
+                <ImageIcon size={16} />
+                <span>画像をダウンロード</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
