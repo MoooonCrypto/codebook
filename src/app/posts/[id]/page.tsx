@@ -11,7 +11,6 @@ import { ThemeToggle } from '../../components/ThemeToggle';
 import { ThemeAwareLogo } from '../../components/ThemeAwareLogo';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { vs } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 // アイコンコンポーネント
 const HeartIcon = ({ size = 16, filled = false }: { size?: number; filled?: boolean }) => (
@@ -185,7 +184,14 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
   const [isResizing, setIsResizing] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [showDescriptionPanel, setShowDescriptionPanel] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [showMinimap, setShowMinimap] = useState(true);
+  const [scrollPercentage, setScrollPercentage] = useState(0);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return document.documentElement.classList.contains('dark');
+    }
+    return false;
+  });
 
   // 複数ファイル対応のためのサンプルデータ構造
   const mockFiles = post ? [
@@ -694,6 +700,22 @@ export default ApiClient;`,
     };
   }, [isResizing]);
 
+  // コードエリアのスクロール監視
+  useEffect(() => {
+    const codeArea = document.querySelector('.code-area');
+    if (!codeArea) return;
+
+    const handleScroll = () => {
+      const scrollTop = codeArea.scrollTop;
+      const scrollHeight = codeArea.scrollHeight - codeArea.clientHeight;
+      const percentage = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+      setScrollPercentage(percentage);
+    };
+
+    codeArea.addEventListener('scroll', handleScroll);
+    return () => codeArea.removeEventListener('scroll', handleScroll);
+  }, [selectedFile]);
+
   const handleCopyCode = async () => {
     const currentFile = mockFiles[selectedFile];
     if (currentFile?.code) {
@@ -705,6 +727,15 @@ export default ApiClient;`,
         console.error('Failed to copy code:', error);
       }
     }
+  };
+
+  const handleMinimapClick = (clickPercentage: number) => {
+    const codeArea = document.querySelector('.code-area');
+    if (!codeArea) return;
+
+    const scrollHeight = codeArea.scrollHeight - codeArea.clientHeight;
+    const targetScroll = (clickPercentage / 100) * scrollHeight;
+    codeArea.scrollTop = targetScroll;
   };
 
   if (loading) {
@@ -746,6 +777,11 @@ export default ApiClient;`,
                 </svg>
               </Link>
 
+              {/* テーマ切り替えボタン */}
+              <div className="flex-shrink-0">
+                <ThemeToggle />
+              </div>
+
               {/* プロフィール - PCのみ */}
               <button className="hidden sm:flex items-center space-x-2 px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -758,15 +794,10 @@ export default ApiClient;`,
               {/* 投稿ボタン */}
               <Link
                 href="/posts/create"
-                className="bg-blue-600 text-white px-2 py-1 sm:px-4 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium hover:bg-blue-700 transition-colors whitespace-nowrap flex-shrink-0"
+                className="bg-gray-700 dark:bg-gray-600 text-white px-2 py-1 sm:px-4 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors whitespace-nowrap flex-shrink-0"
               >
                 投稿
               </Link>
-
-              {/* テーマ切り替えボタン */}
-              <div className="flex-shrink-0">
-                <ThemeToggle />
-              </div>
             </div>
           </div>
         </div>
@@ -827,7 +858,7 @@ export default ApiClient;`,
                 <button
                   className={`p-1 rounded transition-colors ${
                     isBookmarked
-                      ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                      ? 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200'
                       : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                   onClick={() => setIsBookmarked(!isBookmarked)}
@@ -840,7 +871,7 @@ export default ApiClient;`,
         </div>
 
       {/* メインコンテンツエリア */}
-      <div className="flex-1 flex overflow-hidden relative main-content" style={{ minHeight: 'calc(100vh - 200px)' }}>
+      <div className="flex-1 flex relative main-content" style={{ minHeight: 'calc(100vh - 200px)' }}>
         {/* VSCode風左サイドバー - PC表示のみ */}
         <div className="hidden md:flex w-12 bg-gray-800 dark:bg-gray-950 border-r border-white/20 dark:border-gray-600 flex-col items-center py-2 space-y-1 flex-shrink-0">
           <button
@@ -911,7 +942,7 @@ export default ApiClient;`,
         {/* ソースコード表示エリア */}
         <div className="flex-1 flex">
           <div
-            className={`code-display-area bg-gray-900 dark:bg-gray-950 flex flex-col relative ${showDescriptionPanel ? 'hidden' : ''}`}
+            className={`code-display-area bg-[#1e1e1e] flex flex-col relative ${showDescriptionPanel ? 'hidden' : ''}`}
             style={{
               minHeight: '500px',
               width: showDescriptionPanel ? '0' : '100%'
@@ -956,29 +987,42 @@ export default ApiClient;`,
             )}
 
             {/* コードヘッダー */}
-            <div className="flex items-center justify-between px-4 py-2 bg-gray-800 dark:bg-gray-900 flex-shrink-0">
+            <div className="flex items-center justify-between px-4 py-2 bg-[#2d2d2d] flex-shrink-0">
               <div className="flex items-center space-x-2">
-                <span className="text-sm font-medium text-gray-300 dark:text-gray-400">
+                <span className="text-sm font-medium text-gray-300">
                   {mockFiles[selectedFile]?.name}
                 </span>
-                <span className="text-xs px-2 py-0.5 bg-gray-700 dark:bg-gray-800 text-gray-300 dark:text-gray-400 rounded">
+                <span className="text-xs px-2 py-0.5 bg-[#3e3e3e] text-gray-300 rounded">
                   {mockFiles[selectedFile]?.language}
                 </span>
               </div>
-              <button
-                className="flex items-center space-x-2 px-2 py-1 bg-gray-700 dark:bg-gray-800 hover:bg-gray-600 dark:hover:bg-gray-700 text-gray-300 dark:text-gray-400 rounded text-xs transition-colors"
-                onClick={handleCopyCode}
-              >
-                <CopyIcon size={14} />
-                <span>{copySuccess ? 'コピー済み!' : 'コピー'}</span>
-              </button>
+              <div className="flex items-center space-x-2">
+                <button
+                  className="flex items-center space-x-1 px-2 py-1 bg-[#3e3e3e] hover:bg-[#4e4e4e] text-gray-300 rounded text-xs transition-colors"
+                  onClick={() => setShowMinimap(!showMinimap)}
+                  title={showMinimap ? 'ミニマップを非表示' : 'ミニマップを表示'}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="3" width="7" height="18" rx="1"></rect>
+                    <rect x="14" y="3" width="7" height="18" rx="1"></rect>
+                  </svg>
+                  <span className="hidden sm:inline">{showMinimap ? 'マップ非表示' : 'マップ表示'}</span>
+                </button>
+                <button
+                  className="flex items-center space-x-2 px-2 py-1 bg-[#3e3e3e] hover:bg-[#4e4e4e] text-gray-300 rounded text-xs transition-colors"
+                  onClick={handleCopyCode}
+                >
+                  <CopyIcon size={14} />
+                  <span>{copySuccess ? 'コピー済み!' : 'コピー'}</span>
+                </button>
+              </div>
             </div>
 
             {/* コード本体 */}
             <div className="flex-1 overflow-auto code-area">
               <SyntaxHighlighter
                 language={mockFiles[selectedFile]?.language.toLowerCase()}
-                style={isDarkMode ? vscDarkPlus : vs}
+                style={vscDarkPlus}
                 customStyle={{
                   margin: 0,
                   padding: '1rem',
@@ -991,27 +1035,60 @@ export default ApiClient;`,
                 lineNumberStyle={{
                   minWidth: '3em',
                   paddingRight: '1em',
-                  color: isDarkMode ? '#858585' : '#999',
+                  color: '#858585',
                   userSelect: 'none'
                 }}
               >
                 {mockFiles[selectedFile]?.code || ''}
               </SyntaxHighlighter>
             </div>
+
+            {/* ミニマップ */}
+            {showMinimap && (
+              <div className="absolute top-12 right-2 w-24 bg-[#1e1e1e] border border-gray-700 rounded shadow-lg z-20 overflow-hidden">
+                <div
+                  className="relative cursor-pointer"
+                  style={{ height: '300px' }}
+                  onClick={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const clickY = e.clientY - rect.top;
+                    const clickPercentage = (clickY / rect.height) * 100;
+                    handleMinimapClick(clickPercentage);
+                  }}
+                >
+                  {/* ミニマップのコードプレビュー */}
+                  <div className="absolute inset-0 overflow-hidden opacity-60">
+                    <pre className="text-[3px] leading-[4px] text-gray-400 whitespace-pre p-1 font-mono">
+                      {mockFiles[selectedFile]?.code || ''}
+                    </pre>
+                  </div>
+
+                  {/* 現在の表示位置インジケーター */}
+                  <div
+                    className="absolute left-0 right-0 bg-blue-500/30 border border-blue-400/50 transition-all"
+                    style={{
+                      top: `${scrollPercentage}%`,
+                      height: '20%',
+                      pointerEvents: 'none'
+                    }}
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           {/* リサイズバー - PC表示のみ */}
           <div
-            className="hidden md:block w-px bg-gray-200 dark:bg-gray-700 hover:bg-blue-400 dark:hover:bg-blue-500 cursor-col-resize flex-shrink-0 relative group"
+            className="hidden md:block w-px bg-gray-200 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-500 cursor-col-resize flex-shrink-0 relative group"
             onMouseDown={() => setIsResizing(true)}
           >
-            <div className="absolute inset-0 w-4 -ml-2 group-hover:bg-blue-500/10 dark:group-hover:bg-blue-400/10"></div>
+            <div className="absolute inset-0 w-2 -ml-1 group-hover:bg-gray-400/20 dark:group-hover:bg-gray-500/20"></div>
           </div>
 
           {/* 説明文エリア（独立スクロール） - PCは通常表示、モバイルは絶対配置 */}
           <div
             className={`
-              bg-white dark:bg-gray-900 flex flex-col
+              bg-gray-50 dark:bg-gray-900 flex flex-col
               ${showDescriptionPanel ? 'fixed inset-0 z-40 border-l border-gray-200 dark:border-gray-700' : 'hidden md:flex'}
             `}
             style={{
@@ -1020,7 +1097,7 @@ export default ApiClient;`,
           >
             {/* モバイル用閉じるボタン */}
             {showDescriptionPanel && (
-              <div className="md:hidden flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+              <div className="md:hidden flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
                 <h2 className="text-lg font-bold text-gray-900 dark:text-white">説明</h2>
                 <button
                   onClick={() => setShowDescriptionPanel(false)}

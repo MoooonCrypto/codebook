@@ -298,7 +298,7 @@ export default function HomePage() {
               {/* 投稿ボタン */}
               <Link
                 href="/posts/create"
-                className="bg-blue-600 text-white px-2 py-1 sm:px-4 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium hover:bg-blue-700 transition-colors whitespace-nowrap flex-shrink-0"
+                className="bg-gray-700 dark:bg-gray-600 text-white px-2 py-1 sm:px-4 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors whitespace-nowrap flex-shrink-0"
               >
                 投稿
               </Link>
@@ -310,10 +310,10 @@ export default function HomePage() {
             {tabItems.map((tab) => {
               const isActive = activeTab === tab.id;
               const colorClasses = {
-                blue: isActive ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 hover:border-blue-300',
-                green: isActive ? 'border-green-500 text-green-600 dark:text-green-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-green-500 dark:hover:text-green-400 hover:border-green-300',
-                purple: isActive ? 'border-purple-500 text-purple-600 dark:text-purple-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-purple-500 dark:hover:text-purple-400 hover:border-purple-300',
-                red: isActive ? 'border-red-500 text-red-600 dark:text-red-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 hover:border-red-300'
+                blue: isActive ? 'border-gray-700 text-gray-900 dark:text-gray-100' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-400',
+                green: isActive ? 'border-gray-700 text-gray-900 dark:text-gray-100' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-400',
+                purple: isActive ? 'border-gray-700 text-gray-900 dark:text-gray-100' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-400',
+                red: isActive ? 'border-gray-700 text-gray-900 dark:text-gray-100' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-400'
               };
 
               return (
