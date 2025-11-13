@@ -184,8 +184,6 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
   const [isResizing, setIsResizing] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [showDescriptionPanel, setShowDescriptionPanel] = useState(false);
-  const [showMinimap, setShowMinimap] = useState(true);
-  const [scrollPercentage, setScrollPercentage] = useState(0);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return document.documentElement.classList.contains('dark');
@@ -700,39 +698,6 @@ export default ApiClient;`,
     };
   }, [isResizing]);
 
-  // コードエリアのスクロール監視
-  useEffect(() => {
-    // DOMが完全に描画されるまで少し待つ
-    const timer = setTimeout(() => {
-      const codeArea = document.querySelector('.code-area');
-      if (!codeArea) {
-        console.log('code-area not found');
-        return;
-      }
-
-      const handleScroll = () => {
-        const scrollTop = codeArea.scrollTop;
-        const scrollHeight = codeArea.scrollHeight - codeArea.clientHeight;
-        const percentage = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
-        setScrollPercentage(percentage);
-        console.log('Scroll:', { scrollTop, scrollHeight, percentage });
-      };
-
-      // 初期位置を設定
-      handleScroll();
-
-      codeArea.addEventListener('scroll', handleScroll);
-      console.log('Scroll listener attached');
-
-      return () => {
-        codeArea.removeEventListener('scroll', handleScroll);
-        console.log('Scroll listener removed');
-      };
-    }, 100);
-
-    return () => clearTimeout(timer);
-  }, [selectedFile, post]);
-
   const handleCopyCode = async () => {
     const currentFile = mockFiles[selectedFile];
     if (currentFile?.code) {
@@ -744,19 +709,6 @@ export default ApiClient;`,
         console.error('Failed to copy code:', error);
       }
     }
-  };
-
-  const handleMinimapClick = (clickPercentage: number) => {
-    const codeArea = document.querySelector('.code-area');
-    if (!codeArea) {
-      console.log('code-area not found for minimap click');
-      return;
-    }
-
-    const scrollHeight = codeArea.scrollHeight - codeArea.clientHeight;
-    const targetScroll = (clickPercentage / 100) * scrollHeight;
-    codeArea.scrollTop = targetScroll;
-    console.log('Minimap click:', { clickPercentage, scrollHeight, targetScroll });
   };
 
   if (loading) {
@@ -892,7 +844,7 @@ export default ApiClient;`,
         </div>
 
       {/* メインコンテンツエリア */}
-      <div className="flex-1 flex relative main-content" style={{ minHeight: 'calc(100vh - 200px)' }}>
+      <div className="flex-1 flex overflow-hidden relative main-content" style={{ minHeight: 'calc(100vh - 200px)' }}>
         {/* VSCode風左サイドバー - PC表示のみ */}
         <div className="hidden md:flex w-12 bg-gray-800 dark:bg-gray-950 border-r border-white/20 dark:border-gray-600 flex-col items-center py-2 space-y-1 flex-shrink-0">
           <button
@@ -961,9 +913,9 @@ export default ApiClient;`,
         </button>
 
         {/* ソースコード表示エリア */}
-        <div className="flex-1 flex overflow-hidden">
+        <div className="flex-1 flex">
           <div
-            className={`code-display-area bg-[#1e1e1e] flex flex-col relative overflow-hidden ${showDescriptionPanel ? 'hidden' : ''}`}
+            className={`code-display-area bg-[#1e1e1e] flex flex-col overflow-hidden relative ${showDescriptionPanel ? 'hidden' : ''}`}
             style={{
               minHeight: '500px',
               width: showDescriptionPanel ? '0' : '100%'
@@ -1017,26 +969,13 @@ export default ApiClient;`,
                   {mockFiles[selectedFile]?.language}
                 </span>
               </div>
-              <div className="flex items-center space-x-2">
-                <button
-                  className="flex items-center space-x-1 px-2 py-1 bg-[#3e3e3e] hover:bg-[#4e4e4e] text-gray-300 rounded text-xs transition-colors"
-                  onClick={() => setShowMinimap(!showMinimap)}
-                  title={showMinimap ? 'ミニマップを非表示' : 'ミニマップを表示'}
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <rect x="3" y="3" width="7" height="18" rx="1"></rect>
-                    <rect x="14" y="3" width="7" height="18" rx="1"></rect>
-                  </svg>
-                  <span className="hidden sm:inline">{showMinimap ? 'マップ非表示' : 'マップ表示'}</span>
-                </button>
-                <button
-                  className="flex items-center space-x-2 px-2 py-1 bg-[#3e3e3e] hover:bg-[#4e4e4e] text-gray-300 rounded text-xs transition-colors"
-                  onClick={handleCopyCode}
-                >
-                  <CopyIcon size={14} />
-                  <span>{copySuccess ? 'コピー済み!' : 'コピー'}</span>
-                </button>
-              </div>
+              <button
+                className="flex items-center space-x-2 px-2 py-1 bg-[#3e3e3e] hover:bg-[#4e4e4e] text-gray-300 rounded text-xs transition-colors"
+                onClick={handleCopyCode}
+              >
+                <CopyIcon size={14} />
+                <span>{copySuccess ? 'コピー済み!' : 'コピー'}</span>
+              </button>
             </div>
 
             {/* コード本体 */}
@@ -1063,39 +1002,6 @@ export default ApiClient;`,
                 {mockFiles[selectedFile]?.code || ''}
               </SyntaxHighlighter>
             </div>
-
-            {/* ミニマップ */}
-            {showMinimap && (
-              <div className="absolute top-12 right-2 w-24 bg-[#1e1e1e] border border-gray-700 rounded shadow-lg z-20 overflow-hidden">
-                <div
-                  className="relative cursor-pointer"
-                  style={{ height: '300px' }}
-                  onClick={(e) => {
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    const clickY = e.clientY - rect.top;
-                    const clickPercentage = (clickY / rect.height) * 100;
-                    handleMinimapClick(clickPercentage);
-                  }}
-                >
-                  {/* ミニマップのコードプレビュー */}
-                  <div className="absolute inset-0 overflow-hidden opacity-60">
-                    <pre className="text-[3px] leading-[4px] text-gray-400 whitespace-pre p-1 font-mono">
-                      {mockFiles[selectedFile]?.code || ''}
-                    </pre>
-                  </div>
-
-                  {/* 現在の表示位置インジケーター */}
-                  <div
-                    className="absolute left-0 right-0 bg-blue-500/30 border border-blue-400/50 transition-all"
-                    style={{
-                      top: `${scrollPercentage}%`,
-                      height: '20%',
-                      pointerEvents: 'none'
-                    }}
-                  />
-                </div>
-              </div>
-            )}
           </div>
 
           {/* リサイズバー - PC表示のみ */}
