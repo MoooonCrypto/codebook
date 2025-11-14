@@ -9,6 +9,7 @@ import { SearchBar } from '@/app/components/SearchBar';
 import { LanguageGrid } from '@/app/components/LanguageGrid';
 import { PostCard } from '@/app/components/PostCard';
 import { ThemeAwareLogo } from '@/app/components/ThemeAwareLogo';
+import { ThemeToggle } from '@/app/components/ThemeToggle';
 import { mockPosts } from '@/lib/mockData';
 
 function SearchPageContent() {
@@ -263,6 +264,11 @@ function SearchPageContent() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </span>
+
+              {/* テーマ切り替えボタン */}
+              <div className="flex-shrink-0">
+                <ThemeToggle />
+              </div>
 
               {/* プロフィール - PCのみ */}
               <button className="hidden sm:flex items-center space-x-2 px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">

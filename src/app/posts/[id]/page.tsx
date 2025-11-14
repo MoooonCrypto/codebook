@@ -171,6 +171,75 @@ const SettingsIcon = ({ size = 16 }: { size?: number }) => (
   </svg>
 );
 
+const TextIcon = ({ size = 16 }: { size?: number }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+    <polyline points="14,2 14,8 20,8"></polyline>
+    <line x1="16" y1="13" x2="8" y2="13"></line>
+    <line x1="16" y1="17" x2="8" y2="17"></line>
+    <polyline points="10,9 9,9 8,9"></polyline>
+  </svg>
+);
+
+const TwitterIcon = ({ size = 16 }: { size?: number }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="currentColor"
+  >
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
+  </svg>
+);
+
+const FacebookIcon = ({ size = 16 }: { size?: number }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="currentColor"
+  >
+    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path>
+  </svg>
+);
+
+const HatenaIcon = ({ size = 16 }: { size?: number }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="currentColor"
+  >
+    <path d="M20.47 0C22.42 0 24 1.58 24 3.53v16.94c0 1.95-1.58 3.53-3.53 3.53H3.53C1.58 24 0 22.42 0 20.47V3.53C0 1.58 1.58 0 3.53 0h16.94zM5.53 5.44c0-.25.2-.45.45-.45h2.37c.25 0 .45.2.45.45v.45c0 .25-.2.45-.45.45H5.98c-.25 0-.45-.2-.45-.45v-.45zm0 2.67c0-.25.2-.45.45-.45h2.37c.25 0 .45.2.45.45v.45c0 .25-.2.45-.45.45H5.98c-.25 0-.45-.2-.45-.45v-.45zm0 2.67c0-.25.2-.45.45-.45h2.37c.25 0 .45.2.45.45v.45c0 .25-.2.45-.45.45H5.98c-.25 0-.45-.2-.45-.45v-.45zm0 2.67c0-.25.2-.45.45-.45h2.37c.25 0 .45.2.45.45v.45c0 .25-.2.45-.45.45H5.98c-.25 0-.45-.2-.45-.45v-.45zm8.35 3.11c-.74 0-1.34-.6-1.34-1.34 0-.74.6-1.34 1.34-1.34.74 0 1.34.6 1.34 1.34 0 .74-.6 1.34-1.34 1.34zm2.14-5.78h-4.28V5.44h4.28v5.33z"></path>
+  </svg>
+);
+
+const ImageIcon = ({ size = 16 }: { size?: number }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+    <polyline points="21,15 16,10 5,21"></polyline>
+  </svg>
+);
+
 export default function PostDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const [post, setPost] = useState<Post | null>(null);
   const [author, setAuthor] = useState<User | null>(null);
@@ -180,16 +249,11 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
   const [showFileList, setShowFileList] = useState(false);
   const [selectedFile, setSelectedFile] = useState(0);
   const [copySuccess, setCopySuccess] = useState(false);
-  const [codeWidth, setCodeWidth] = useState(60);
-  const [isResizing, setIsResizing] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
-  const [showDescriptionPanel, setShowDescriptionPanel] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return document.documentElement.classList.contains('dark');
-    }
-    return false;
-  });
+  const [showTextPanel, setShowTextPanel] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [imageTargetFile, setImageTargetFile] = useState(0);
+  const [imageBgColor, setImageBgColor] = useState('linear-gradient(135deg, #667eea 0%, #764ba2 100%)');
 
   // 複数ファイル対応のためのサンプルデータ構造
   const mockFiles = post ? [
@@ -647,57 +711,6 @@ export default ApiClient;`,
     loadPostData();
   }, [params]);
 
-  // ダークモード検出
-  useEffect(() => {
-    const checkDarkMode = () => {
-      setIsDarkMode(document.documentElement.classList.contains('dark'));
-    };
-
-    checkDarkMode();
-
-    // ダークモード変更を監視
-    const observer = new MutationObserver(checkDarkMode);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['class']
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  // codeWidthをCSSカスタムプロパティとして設定
-  useEffect(() => {
-    document.documentElement.style.setProperty('--code-width', `${codeWidth}%`);
-  }, [codeWidth]);
-
-  // リサイズ機能
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!isResizing) return;
-
-      const containerRect = document.querySelector('.main-content')?.getBoundingClientRect();
-      if (!containerRect) return;
-
-      const newCodeWidth = ((e.clientX - containerRect.left) / containerRect.width) * 100;
-      const clampedWidth = Math.max(20, Math.min(80, newCodeWidth));
-      setCodeWidth(clampedWidth);
-    };
-
-    const handleMouseUp = () => {
-      setIsResizing(false);
-    };
-
-    if (isResizing) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-    }
-
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isResizing]);
-
   const handleCopyCode = async () => {
     const currentFile = mockFiles[selectedFile];
     if (currentFile?.code) {
@@ -709,6 +722,49 @@ export default ApiClient;`,
         console.error('Failed to copy code:', error);
       }
     }
+  };
+
+  const handleShareTwitter = () => {
+    const url = encodeURIComponent(window.location.href);
+    const text = encodeURIComponent(post?.title || '');
+    window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank');
+  };
+
+  const handleShareFacebook = () => {
+    const url = encodeURIComponent(window.location.href);
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+  };
+
+  const handleShareHatena = () => {
+    const url = encodeURIComponent(window.location.href);
+    const title = encodeURIComponent(post?.title || '');
+    window.open(`https://b.hatena.ne.jp/entry/panel/?url=${url}&title=${title}`, '_blank');
+  };
+
+  const handleDownloadImage = async () => {
+    const { toPng } = await import('html-to-image');
+    const element = document.getElementById('code-image-preview');
+    if (!element) return;
+
+    try {
+      const dataUrl = await toPng(element, {
+        quality: 1,
+        pixelRatio: 2,
+      });
+
+      const link = document.createElement('a');
+      link.download = `${mockFiles[imageTargetFile]?.name || 'code'}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (error) {
+      console.error('Failed to generate image:', error);
+    }
+  };
+
+  // モーダルを開いたときに現在のファイルを選択
+  const handleOpenImageModal = () => {
+    setImageTargetFile(selectedFile);
+    setShowImageModal(true);
   };
 
   if (loading) {
@@ -726,7 +782,7 @@ export default ApiClient;`,
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col">
       {/* ヘッダー */}
-      <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+      <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 flex-shrink-0">
         <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
           <div className="flex items-center justify-between h-11 sm:h-16">
             {/* 左側: ロゴ */}
@@ -845,8 +901,9 @@ export default ApiClient;`,
 
       {/* メインコンテンツエリア */}
       <div className="flex-1 flex overflow-hidden relative main-content" style={{ minHeight: 'calc(100vh - 200px)' }}>
-        {/* VSCode風左サイドバー - PC表示のみ */}
+        {/* 左サイドバー - PC表示のみ */}
         <div className="hidden md:flex w-12 bg-gray-800 dark:bg-gray-950 border-r border-white/20 dark:border-gray-600 flex-col items-center py-2 space-y-1 flex-shrink-0">
+          {/* ファイル・テキスト表示 */}
           <button
             className={`p-2 rounded hover:bg-gray-700 dark:hover:bg-gray-800 transition-colors ${
               activeMenu === 'files' ? 'bg-gray-700 dark:bg-gray-800 text-white' : 'text-gray-400 dark:text-gray-500'
@@ -861,66 +918,46 @@ export default ApiClient;`,
           </button>
           <button
             className={`p-2 rounded hover:bg-gray-700 dark:hover:bg-gray-800 transition-colors ${
-              activeMenu === 'search' ? 'bg-gray-700 dark:bg-gray-800 text-white' : 'text-gray-400 dark:text-gray-500'
+              showTextPanel ? 'bg-gray-700 dark:bg-gray-800 text-white' : 'text-gray-400 dark:text-gray-500'
             }`}
-            onClick={() => setActiveMenu(activeMenu === 'search' ? null : 'search')}
-            title="検索"
+            onClick={() => setShowTextPanel(!showTextPanel)}
+            title="テキスト表示"
           >
-            <SearchIcon size={16} />
+            <TextIcon size={16} />
+          </button>
+
+          {/* 区切り線 */}
+          <div className="w-8 h-px bg-gray-700 dark:bg-gray-600 my-2"></div>
+
+          {/* SNS共有 */}
+          <button
+            className="p-2 rounded hover:bg-gray-700 dark:hover:bg-gray-800 transition-colors text-[#00a4de]"
+            onClick={handleShareTwitter}
+            title="Xで共有"
+          >
+            <TwitterIcon size={14} />
           </button>
           <button
-            className={`p-2 rounded hover:bg-gray-700 dark:hover:bg-gray-800 transition-colors ${
-              activeMenu === 'git' ? 'bg-gray-700 dark:bg-gray-800 text-white' : 'text-gray-400 dark:text-gray-500'
-            }`}
-            onClick={() => setActiveMenu(activeMenu === 'git' ? null : 'git')}
-            title="Git"
+            className="p-2 rounded hover:bg-gray-700 dark:hover:bg-gray-800 transition-colors text-[#1877f2]"
+            onClick={handleShareFacebook}
+            title="Facebookで共有"
           >
-            <GitBranchIcon size={16} />
+            <FacebookIcon size={14} />
           </button>
+          <button
+            className="p-2 rounded hover:bg-gray-700 dark:hover:bg-gray-800 transition-colors text-[#00a4de]"
+            onClick={handleShareHatena}
+            title="はてなブックマークで共有"
+          >
+            <HatenaIcon size={14} />
+          </button>
+
           <div className="flex-1"></div>
-          <button
-            className={`p-2 rounded hover:bg-gray-700 dark:hover:bg-gray-800 transition-colors ${
-              activeMenu === 'settings' ? 'bg-gray-700 dark:bg-gray-800 text-white' : 'text-gray-400 dark:text-gray-500'
-            }`}
-            onClick={() => setActiveMenu(activeMenu === 'settings' ? null : 'settings')}
-            title="設定"
-          >
-            <SettingsIcon size={16} />
-          </button>
         </div>
-
-        {/* ファイル一覧トグルボタン - モバイルのみ */}
-        <button
-          className="md:hidden fixed top-14 left-2 z-50 bg-gray-800 dark:bg-gray-900 text-white p-2 rounded-lg shadow-lg"
-          onClick={() => {
-            setActiveMenu(activeMenu === 'files' ? null : 'files');
-            setShowFileList(activeMenu !== 'files');
-          }}
-          aria-label="ファイル一覧"
-        >
-          <FolderIcon size={16} />
-        </button>
-
-        {/* 説明パネルトグルボタン - モバイルのみ */}
-        <button
-          className="md:hidden fixed top-14 right-2 z-50 bg-white dark:bg-gray-900 text-gray-900 dark:text-white p-2 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700"
-          onClick={() => setShowDescriptionPanel(!showDescriptionPanel)}
-          aria-label="説明パネル"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-        </button>
 
         {/* ソースコード表示エリア */}
         <div className="flex-1 flex">
-          <div
-            className={`code-display-area bg-[#1e1e1e] flex flex-col overflow-hidden relative ${showDescriptionPanel ? 'hidden' : ''}`}
-            style={{
-              minHeight: '500px',
-              width: showDescriptionPanel ? '0' : '100%'
-            }}
-          >
+          <div className="code-display-area bg-[#1e1e1e] flex flex-col relative flex-1">
             {/* ファイル一覧オーバーレイ */}
             {showFileList && activeMenu === 'files' && (
               <div className="absolute top-0 left-0 bottom-0 w-64 bg-gray-800 dark:bg-gray-900 border-r border-white/20 dark:border-gray-600 z-10 shadow-lg">
@@ -969,13 +1006,22 @@ export default ApiClient;`,
                   {mockFiles[selectedFile]?.language}
                 </span>
               </div>
-              <button
-                className="flex items-center space-x-2 px-2 py-1 bg-[#3e3e3e] hover:bg-[#4e4e4e] text-gray-300 rounded text-xs transition-colors"
-                onClick={handleCopyCode}
-              >
-                <CopyIcon size={14} />
-                <span>{copySuccess ? 'コピー済み!' : 'コピー'}</span>
-              </button>
+              <div className="flex items-center space-x-2">
+                <button
+                  className="flex items-center space-x-2 px-2 py-1 bg-[#3e3e3e] hover:bg-[#4e4e4e] text-gray-300 rounded text-xs transition-colors"
+                  onClick={handleCopyCode}
+                >
+                  <CopyIcon size={14} />
+                  <span>{copySuccess ? 'コピー済み!' : 'コピー'}</span>
+                </button>
+                <button
+                  className="flex items-center space-x-2 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs transition-colors font-medium"
+                  onClick={handleOpenImageModal}
+                >
+                  <ImageIcon size={14} />
+                  <span>画像共有</span>
+                </button>
+              </div>
             </div>
 
             {/* コード本体 */}
@@ -988,7 +1034,9 @@ export default ApiClient;`,
                   padding: '1rem',
                   background: 'transparent',
                   fontSize: '0.875rem',
-                  lineHeight: '1.625'
+                  lineHeight: '1.625',
+                  height: '100%',
+                  overflow: 'visible'
                 }}
                 showLineNumbers={true}
                 wrapLines={true}
@@ -1004,40 +1052,22 @@ export default ApiClient;`,
             </div>
           </div>
 
-          {/* リサイズバー - PC表示のみ */}
-          <div
-            className="hidden md:block w-px bg-gray-200 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-500 cursor-col-resize flex-shrink-0 relative group"
-            onMouseDown={() => setIsResizing(true)}
-          >
-            <div className="absolute inset-0 w-2 -ml-1 group-hover:bg-gray-400/20 dark:group-hover:bg-gray-500/20"></div>
-          </div>
-
-          {/* 説明文エリア（独立スクロール） - PCは通常表示、モバイルは絶対配置 */}
-          <div
-            className={`
-              bg-gray-50 dark:bg-gray-900 flex flex-col overflow-hidden
-              ${showDescriptionPanel ? 'fixed inset-0 z-40 border-l border-gray-200 dark:border-gray-700' : 'hidden md:flex'}
-            `}
-            style={{
-              width: showDescriptionPanel ? '100%' : `${100 - codeWidth}%`
-            }}
-          >
-            {/* モバイル用閉じるボタン */}
-            {showDescriptionPanel && (
-              <div className="md:hidden flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+          {/* テキスト表示エリア - トグルで表示 */}
+          {showTextPanel && (
+            <div className="w-[40%] bg-gray-50 dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden">
+              <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
                 <h2 className="text-lg font-bold text-gray-900 dark:text-white">説明</h2>
                 <button
-                  onClick={() => setShowDescriptionPanel(false)}
-                  className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                  onClick={() => setShowTextPanel(false)}
+                  className="p-1 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 rounded hover:bg-gray-200 dark:hover:bg-gray-800"
                   aria-label="閉じる"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               </div>
-            )}
-            <div className="flex-1 overflow-auto p-6">
+              <div className="flex-1 overflow-auto p-6">
               <div className="prose prose-sm max-w-none">
                 <div className="text-gray-700 dark:text-gray-300 leading-relaxed space-y-4">
                   {post.content.split('\n\n').map((paragraph, index) => {
@@ -1155,9 +1185,166 @@ export default ApiClient;`,
                 </div>
               </div>
             </div>
-          </div>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* 画像共有モーダル */}
+      {showImageModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+          <div className="bg-white dark:bg-gray-900 rounded-lg shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            {/* モーダルヘッダー */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">コード画像を作成</h2>
+              <button
+                onClick={() => setShowImageModal(false)}
+                className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* モーダルボディ */}
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+              {/* 設定エリア */}
+              <div className="mb-6 space-y-4">
+                {/* ファイル選択 */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    対象ファイル
+                  </label>
+                  <select
+                    value={imageTargetFile}
+                    onChange={(e) => setImageTargetFile(Number(e.target.value))}
+                    className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    {mockFiles.map((file, index) => (
+                      <option key={index} value={index}>
+                        {file.name} ({file.language})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* 背景色選択 */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    背景スタイル
+                  </label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {[
+                      { name: 'パープル', value: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
+                      { name: 'オーシャン', value: 'linear-gradient(135deg, #00c6fb 0%, #005bea 100%)' },
+                      { name: 'サンセット', value: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
+                      { name: 'フォレスト', value: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' },
+                      { name: 'ファイア', value: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' },
+                      { name: 'ナイト', value: 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)' },
+                      { name: 'ローズ', value: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)' },
+                      { name: 'カーボン', value: '#1e1e1e' },
+                    ].map((bg) => (
+                      <button
+                        key={bg.name}
+                        onClick={() => setImageBgColor(bg.value)}
+                        className={`relative h-12 rounded-lg border-2 transition-all ${
+                          imageBgColor === bg.value
+                            ? 'border-blue-500 scale-105'
+                            : 'border-gray-300 dark:border-gray-600 hover:border-gray-400'
+                        }`}
+                        style={{ background: bg.value }}
+                      >
+                        <span className="absolute inset-0 flex items-center justify-center text-xs font-medium text-white drop-shadow-lg">
+                          {bg.name}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* プレビューエリア */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  プレビュー
+                </label>
+                <div
+                  id="code-image-preview"
+                  className="rounded-xl shadow-2xl overflow-hidden"
+                  style={{
+                    background: imageBgColor,
+                    padding: '60px',
+                  }}
+                >
+                  <div className="bg-[#1e1e1e] rounded-lg shadow-xl overflow-hidden">
+                    {/* ウィンドウコントロール */}
+                    <div className="flex items-center space-x-2 px-4 py-3 bg-[#2d2d2d]">
+                      <div className="flex space-x-2">
+                        <div className="w-3 h-3 rounded-full bg-[#ff5f56]"></div>
+                        <div className="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
+                        <div className="w-3 h-3 rounded-full bg-[#27c93f]"></div>
+                      </div>
+                      <div className="flex-1 text-center">
+                        <span className="text-sm text-gray-400">{mockFiles[imageTargetFile]?.name}</span>
+                      </div>
+                    </div>
+
+                    {/* コード表示 */}
+                    <div className="p-6">
+                      <SyntaxHighlighter
+                        language={mockFiles[imageTargetFile]?.language.toLowerCase()}
+                        style={vscDarkPlus}
+                        customStyle={{
+                          margin: 0,
+                          padding: 0,
+                          background: 'transparent',
+                          fontSize: '14px',
+                          lineHeight: '1.6',
+                        }}
+                        showLineNumbers={true}
+                        lineNumberStyle={{
+                          minWidth: '3em',
+                          paddingRight: '1em',
+                          color: '#858585',
+                          userSelect: 'none',
+                        }}
+                      >
+                        {mockFiles[imageTargetFile]?.code || ''}
+                      </SyntaxHighlighter>
+                    </div>
+
+                    {/* フッター */}
+                    <div className="px-6 py-3 bg-[#2d2d2d] border-t border-[#3e3e3e]">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-gray-400">CodeBook - {post?.title}</span>
+                        <span className="text-xs text-gray-500">{mockFiles[imageTargetFile]?.language}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* モーダルフッター */}
+            <div className="flex items-center justify-end space-x-3 p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+              <button
+                onClick={() => setShowImageModal(false)}
+                className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              >
+                キャンセル
+              </button>
+              <button
+                onClick={handleDownloadImage}
+                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center space-x-2"
+              >
+                <ImageIcon size={16} />
+                <span>画像をダウンロード</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
