@@ -8,6 +8,7 @@ import { CodeEditor, CodeDisplay } from '@/app/components/CodeEditor';
 import { MarkdownRenderer } from '@/app/components/MarkdownRenderer';
 import { TagInput } from '@/app/components/TagInput';
 import { ThemeAwareLogo } from '@/app/components/ThemeAwareLogo';
+import { ThemeToggle } from '@/app/components/ThemeToggle';
 import { detectLanguage } from '@/lib/languageDetection';
 import { mockPosts } from '@/lib/mockData';
 
@@ -129,28 +130,34 @@ export default function CreatePost() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* ヘッダー */}
-      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+      <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+          <div className="flex items-center justify-between h-11 sm:h-16">
             {/* 左側: ロゴ + タイトル */}
-            <div className="flex items-center">
-              <Link href="/" className="flex items-center mr-6">
-                <div className="w-8 h-8 mr-2">
-                  <ThemeAwareLogo width={32} height={32} />
+            <div className="flex items-center flex-shrink-0 min-w-0 mr-2">
+              <Link href="/" className="flex items-center mr-2 sm:mr-4">
+                <div className="w-6 h-6 sm:w-10 sm:h-10 mr-1 sm:mr-3 flex-shrink-0">
+                  <ThemeAwareLogo />
                 </div>
-                <span className="font-bold text-lg text-gray-900 dark:text-white">CodeBook</span>
+                <span className="font-bold text-sm sm:text-xl text-gray-900 dark:text-white truncate">CodeBook</span>
               </Link>
-              <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                新しい投稿を作成
+              <h1 className="hidden sm:block text-base sm:text-xl font-semibold text-gray-900 dark:text-gray-100 truncate">
+                新しい投稿
               </h1>
             </div>
 
             {/* 右側: アクションボタン */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+              {/* テーマ切り替えボタン */}
+              <div className="flex-shrink-0">
+                <ThemeToggle />
+              </div>
+
+              {/* プレビューボタン */}
               <button
                 type="button"
                 onClick={() => setIsPreviewMode(!isPreviewMode)}
-                className={`px-3 py-1.5 text-sm border rounded-md transition-colors ${
+                className={`px-2 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm border rounded-md transition-colors whitespace-nowrap ${
                   isPreviewMode
                     ? 'bg-blue-50 border-blue-300 text-blue-700 dark:bg-blue-900/20 dark:border-blue-600 dark:text-blue-300'
                     : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
@@ -158,21 +165,25 @@ export default function CreatePost() {
               >
                 {isPreviewMode ? '編集' : 'プレビュー'}
               </button>
+
+              {/* 下書き保存ボタン - PCのみ */}
               <button
                 type="button"
                 onClick={() => handleSubmit(false)}
                 disabled={isSubmitting}
-                className="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+                className="hidden sm:block px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 whitespace-nowrap"
               >
-                下書き保存
+                下書き
               </button>
+
+              {/* 公開ボタン */}
               <button
                 type="button"
                 onClick={() => handleSubmit(true)}
                 disabled={isSubmitting}
-                className="px-3 py-1.5 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors disabled:opacity-50"
+                className="px-2 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm bg-gray-700 hover:bg-gray-800 dark:bg-gray-600 dark:hover:bg-gray-700 text-white rounded-md transition-colors disabled:opacity-50 whitespace-nowrap font-medium"
               >
-                公開する
+                公開
               </button>
             </div>
           </div>
