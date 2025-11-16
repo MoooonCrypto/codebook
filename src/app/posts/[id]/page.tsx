@@ -956,7 +956,7 @@ export default ApiClient;`,
         </div>
 
         {/* ソースコード表示エリア */}
-        <div className="flex-1 flex bg-[#1e1e1e] overflow-auto">
+        <div className="flex-1 flex bg-gray-50 dark:bg-gray-900 overflow-auto">
           <div className="w-full max-w-6xl mx-auto flex flex-col relative px-3 sm:px-6 lg:px-8">
             {/* ファイル一覧オーバーレイ */}
             {showFileList && activeMenu === 'files' && (
