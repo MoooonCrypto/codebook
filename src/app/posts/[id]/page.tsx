@@ -956,8 +956,8 @@ export default ApiClient;`,
         </div>
 
         {/* ソースコード表示エリア */}
-        <div className="flex-1 flex">
-          <div className="code-display-area bg-[#1e1e1e] flex flex-col relative flex-1">
+        <div className="flex-1 flex bg-[#1e1e1e] overflow-auto">
+          <div className="w-full max-w-6xl mx-auto flex flex-col relative px-3 sm:px-6 lg:px-8">
             {/* ファイル一覧オーバーレイ */}
             {showFileList && activeMenu === 'files' && (
               <div className="absolute top-0 left-0 bottom-0 w-64 bg-gray-800 dark:bg-gray-900 border-r border-white/20 dark:border-gray-600 z-10 shadow-lg">
@@ -997,7 +997,7 @@ export default ApiClient;`,
             )}
 
             {/* コードヘッダー */}
-            <div className="flex items-center justify-between px-4 py-2 bg-[#2d2d2d] flex-shrink-0">
+            <div className="flex items-center justify-between px-3 sm:px-4 py-2 bg-[#2d2d2d] flex-shrink-0 rounded-t-lg mt-4">
               <div className="flex items-center space-x-2">
                 <span className="text-sm font-medium text-gray-300">
                   {mockFiles[selectedFile]?.name}
@@ -1012,26 +1012,26 @@ export default ApiClient;`,
                   onClick={handleCopyCode}
                 >
                   <CopyIcon size={14} />
-                  <span>{copySuccess ? 'コピー済み!' : 'コピー'}</span>
+                  <span className="hidden sm:inline">{copySuccess ? 'コピー済み!' : 'コピー'}</span>
                 </button>
                 <button
-                  className="flex items-center space-x-2 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs transition-colors font-medium"
+                  className="flex items-center space-x-2 px-2 sm:px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs transition-colors font-medium"
                   onClick={handleOpenImageModal}
                 >
                   <ImageIcon size={14} />
-                  <span>画像共有</span>
+                  <span className="hidden sm:inline">画像共有</span>
                 </button>
               </div>
             </div>
 
             {/* コード本体 */}
-            <div className="flex-1 overflow-auto code-area">
+            <div className="flex-1 overflow-auto code-area bg-[#1e1e1e] rounded-b-lg border border-[#2d2d2d]">
               <SyntaxHighlighter
                 language={mockFiles[selectedFile]?.language.toLowerCase()}
                 style={vscDarkPlus}
                 customStyle={{
                   margin: 0,
-                  padding: '1rem',
+                  padding: '1.5rem 1rem',
                   background: 'transparent',
                   fontSize: '0.875rem',
                   lineHeight: '1.625',
