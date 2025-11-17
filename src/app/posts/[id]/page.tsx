@@ -240,6 +240,41 @@ const ImageIcon = ({ size = 16 }: { size?: number }) => (
   </svg>
 );
 
+const WrapIcon = ({ size = 16 }: { size?: number }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <polyline points="4 7 4 4 20 4 20 7"></polyline>
+    <polyline points="9 20 4 20 4 11"></polyline>
+    <line x1="4" y1="7" x2="4" y2="11"></line>
+    <path d="M20 11v4a2 2 0 0 1-2 2H9l3-3"></path>
+  </svg>
+);
+
+const NoWrapIcon = ({ size = 16 }: { size?: number }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <line x1="3" y1="6" x2="21" y2="6"></line>
+    <line x1="3" y1="12" x2="21" y2="12"></line>
+    <line x1="3" y1="18" x2="21" y2="18"></line>
+  </svg>
+);
+
 export default function PostDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const [post, setPost] = useState<Post | null>(null);
   const [author, setAuthor] = useState<User | null>(null);
@@ -250,10 +285,10 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
   const [selectedFile, setSelectedFile] = useState(0);
   const [copySuccess, setCopySuccess] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
-  const [showTextPanel, setShowTextPanel] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
   const [imageTargetFile, setImageTargetFile] = useState(0);
   const [imageBgColor, setImageBgColor] = useState('linear-gradient(135deg, #667eea 0%, #764ba2 100%)');
+  const [wrapCode, setWrapCode] = useState(true); // 横スクロール切り替え
 
   // 複数ファイル対応のためのサンプルデータ構造
   const mockFiles = post ? [
@@ -900,59 +935,75 @@ export default ApiClient;`,
         </div>
 
       {/* メインコンテンツエリア */}
-      <div className="flex-1 flex overflow-hidden relative main-content" style={{ minHeight: 'calc(100vh - 200px)' }}>
-        {/* 左サイドバー - PC表示のみ */}
-        <div className="hidden md:flex w-12 bg-gray-800 dark:bg-gray-950 border-r border-white/20 dark:border-gray-600 flex-col items-center py-2 space-y-1 flex-shrink-0">
-          {/* ファイル・テキスト表示 */}
-          <button
-            className={`p-2 rounded hover:bg-gray-700 dark:hover:bg-gray-800 transition-colors ${
-              activeMenu === 'files' ? 'bg-gray-700 dark:bg-gray-800 text-white' : 'text-gray-400 dark:text-gray-500'
-            }`}
-            onClick={() => {
-              setActiveMenu(activeMenu === 'files' ? null : 'files');
-              setShowFileList(activeMenu !== 'files');
-            }}
-            title="ファイル一覧"
-          >
-            <FolderIcon size={16} />
-          </button>
-          <button
-            className={`p-2 rounded hover:bg-gray-700 dark:hover:bg-gray-800 transition-colors ${
-              showTextPanel ? 'bg-gray-700 dark:bg-gray-800 text-white' : 'text-gray-400 dark:text-gray-500'
-            }`}
-            onClick={() => setShowTextPanel(!showTextPanel)}
-            title="テキスト表示"
-          >
-            <TextIcon size={16} />
-          </button>
-
-          {/* 区切り線 */}
-          <div className="w-8 h-px bg-gray-700 dark:bg-gray-600 my-2"></div>
-
-          {/* SNS共有 */}
-          <button
-            className="p-2 rounded hover:bg-gray-700 dark:hover:bg-gray-800 transition-colors text-[#00a4de]"
-            onClick={handleShareTwitter}
-            title="Xで共有"
-          >
-            <TwitterIcon size={14} />
-          </button>
-          <button
-            className="p-2 rounded hover:bg-gray-700 dark:hover:bg-gray-800 transition-colors text-[#1877f2]"
-            onClick={handleShareFacebook}
-            title="Facebookで共有"
-          >
-            <FacebookIcon size={14} />
-          </button>
-          <button
-            className="p-2 rounded hover:bg-gray-700 dark:hover:bg-gray-800 transition-colors text-[#00a4de]"
-            onClick={handleShareHatena}
-            title="はてなブックマークで共有"
-          >
-            <HatenaIcon size={14} />
-          </button>
-
-          <div className="flex-1"></div>
+      <div className="flex-1 flex flex-col overflow-hidden relative main-content">
+        {/* README エリア - 上部1/3固定 */}
+        <div className="h-[33vh] bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 overflow-auto flex-shrink-0">
+          <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">説明</h2>
+              {/* SNS共有ボタン - モバイルも表示 */}
+              <div className="flex items-center gap-2">
+                <button
+                  className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-[#00a4de]"
+                  onClick={handleShareTwitter}
+                  title="Xで共有"
+                >
+                  <TwitterIcon size={16} />
+                </button>
+                <button
+                  className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-[#1877f2]"
+                  onClick={handleShareFacebook}
+                  title="Facebookで共有"
+                >
+                  <FacebookIcon size={16} />
+                </button>
+                <button
+                  className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-[#00a4de]"
+                  onClick={handleShareHatena}
+                  title="はてなブックマークで共有"
+                >
+                  <HatenaIcon size={16} />
+                </button>
+              </div>
+            </div>
+            <div className="prose prose-sm max-w-none dark:prose-invert">
+              <div className="text-gray-700 dark:text-gray-300 leading-relaxed space-y-4">
+                {post.content.split('\n\n').map((paragraph, index) => {
+                  if (paragraph.startsWith('#')) {
+                    const level = paragraph.match(/^#+/)?.[0].length || 1;
+                    const text = paragraph.replace(/^#+\s*/, '');
+                    const HeadingTag = `h${Math.min(level, 6)}` as keyof React.JSX.IntrinsicElements;
+                    return (
+                      <HeadingTag
+                        key={index}
+                        className={`font-bold text-gray-900 dark:text-white ${
+                          level === 1 ? 'text-xl' : level === 2 ? 'text-lg' : 'text-base'
+                        }`}
+                      >
+                        {text}
+                      </HeadingTag>
+                    );
+                  }
+                  if (paragraph.startsWith('```')) {
+                    const codeBlock = paragraph.replace(/```[\w]*\n?|\n?```/g, '');
+                    return (
+                      <pre key={index} className="bg-gray-100 dark:bg-gray-800 p-3 rounded text-sm overflow-x-auto">
+                        <code className="text-gray-800 dark:text-gray-200">{codeBlock}</code>
+                      </pre>
+                    );
+                  }
+                  if (paragraph.trim()) {
+                    return (
+                      <p key={index} className="text-gray-700 dark:text-gray-300">
+                        {paragraph}
+                      </p>
+                    );
+                  }
+                  return null;
+                })}
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* ソースコード表示エリア */}
@@ -999,27 +1050,38 @@ export default ApiClient;`,
             {/* コードヘッダー */}
             <div className="flex items-center justify-between px-3 sm:px-4 py-2 bg-[#2d2d2d] flex-shrink-0 rounded-t-lg mt-4">
               <div className="flex items-center space-x-2">
-                <span className="text-sm font-medium text-gray-300">
+                <span className="text-xs sm:text-sm font-medium text-gray-300">
                   {mockFiles[selectedFile]?.name}
                 </span>
                 <span className="text-xs px-2 py-0.5 bg-[#3e3e3e] text-gray-300 rounded">
                   {mockFiles[selectedFile]?.language}
                 </span>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-1 sm:space-x-2">
                 <button
-                  className="flex items-center space-x-2 px-2 py-1 bg-[#3e3e3e] hover:bg-[#4e4e4e] text-gray-300 rounded text-xs transition-colors"
-                  onClick={handleCopyCode}
+                  className="p-1.5 sm:p-2 bg-[#3e3e3e] hover:bg-[#4e4e4e] text-gray-300 rounded transition-colors"
+                  onClick={() => setWrapCode(!wrapCode)}
+                  title={wrapCode ? '横スクロール表示' : '折り返し表示'}
                 >
-                  <CopyIcon size={14} />
-                  <span className="hidden sm:inline">{copySuccess ? 'コピー済み!' : 'コピー'}</span>
+                  {wrapCode ? <NoWrapIcon size={14} /> : <WrapIcon size={14} />}
                 </button>
                 <button
-                  className="flex items-center space-x-2 px-2 sm:px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs transition-colors font-medium"
+                  className={`p-1.5 sm:p-2 rounded transition-colors ${
+                    copySuccess
+                      ? 'bg-green-600 text-white'
+                      : 'bg-[#3e3e3e] hover:bg-[#4e4e4e] text-gray-300'
+                  }`}
+                  onClick={handleCopyCode}
+                  title={copySuccess ? 'コピー済み' : 'コードをコピー'}
+                >
+                  <CopyIcon size={14} />
+                </button>
+                <button
+                  className="p-1.5 sm:p-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
                   onClick={handleOpenImageModal}
+                  title="画像として保存"
                 >
                   <ImageIcon size={14} />
-                  <span className="hidden sm:inline">画像共有</span>
                 </button>
               </div>
             </div>
@@ -1031,162 +1093,28 @@ export default ApiClient;`,
                 style={vscDarkPlus}
                 customStyle={{
                   margin: 0,
-                  padding: '1.5rem 1rem',
+                  padding: '1rem 0.5rem',
                   background: 'transparent',
-                  fontSize: '0.875rem',
-                  lineHeight: '1.625',
+                  fontSize: '0.75rem',
+                  lineHeight: '1.5',
                   height: '100%',
                   overflow: 'visible'
                 }}
-                showLineNumbers={true}
-                wrapLines={true}
-                lineNumberStyle={{
-                  minWidth: '3em',
-                  paddingRight: '1em',
-                  color: '#858585',
-                  userSelect: 'none'
+                className="sm:!text-sm sm:!leading-relaxed sm:!px-4 sm:!py-6"
+                showLineNumbers={false}
+                wrapLines={wrapCode}
+                wrapLongLines={wrapCode}
+                lineProps={{
+                  style: {
+                    whiteSpace: wrapCode ? 'pre-wrap' : 'pre',
+                    wordBreak: wrapCode ? 'break-all' : 'normal'
+                  }
                 }}
               >
                 {mockFiles[selectedFile]?.code || ''}
               </SyntaxHighlighter>
             </div>
           </div>
-
-          {/* テキスト表示エリア - トグルで表示 */}
-          {showTextPanel && (
-            <div className="w-[40%] bg-gray-50 dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden">
-              <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-                <h2 className="text-lg font-bold text-gray-900 dark:text-white">説明</h2>
-                <button
-                  onClick={() => setShowTextPanel(false)}
-                  className="p-1 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 rounded hover:bg-gray-200 dark:hover:bg-gray-800"
-                  aria-label="閉じる"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-              <div className="flex-1 overflow-auto p-6">
-              <div className="prose prose-sm max-w-none">
-                <div className="text-gray-700 dark:text-gray-300 leading-relaxed space-y-4">
-                  {post.content.split('\n\n').map((paragraph, index) => {
-                    if (paragraph.startsWith('#')) {
-                      const level = paragraph.match(/^#+/)?.[0].length || 1;
-                      const text = paragraph.replace(/^#+\s*/, '');
-                      const HeadingTag = `h${Math.min(level, 6)}` as keyof React.JSX.IntrinsicElements;
-                      return (
-                        <HeadingTag
-                          key={index}
-                          className={`font-bold text-gray-900 dark:text-white ${
-                            level === 1 ? 'text-xl' : level === 2 ? 'text-lg' : 'text-base'
-                          }`}
-                        >
-                          {text}
-                        </HeadingTag>
-                      );
-                    }
-                    if (paragraph.startsWith('```')) {
-                      const codeBlock = paragraph.replace(/```[\w]*\n?|\n?```/g, '');
-                      return (
-                        <pre key={index} className="bg-gray-100 dark:bg-gray-800 p-3 rounded text-sm overflow-x-auto">
-                          <code className="text-gray-800 dark:text-gray-200">{codeBlock}</code>
-                        </pre>
-                      );
-                    }
-                    if (paragraph.trim()) {
-                      return (
-                        <p key={index} className="text-gray-700 dark:text-gray-300">
-                          {paragraph}
-                        </p>
-                      );
-                    }
-                    return null;
-                  })}
-
-                  {/* スクロールテスト用の追加コンテンツ */}
-                  <h1 className="text-xl font-bold text-gray-900 dark:text-white mt-8">技術的な詳細情報</h1>
-                  <p className="text-gray-700 dark:text-gray-300">
-                    このプロジェクトは、現代的なWeb開発における様々な課題を解決するために作成されました。
-                    TypeScript、React、Next.jsを使用して、スケーラブルで保守性の高いアプリケーションを構築することを目指しています。
-                  </p>
-
-                  <h2 className="text-lg font-bold text-gray-900 dark:text-white">技術的なアプローチ</h2>
-                  <p className="text-gray-700 dark:text-gray-300">
-                    本プロジェクトでは、最新のフロントエンド技術を組み合わせて、ユーザーエクスペリエンスを向上させるための様々な手法を実装しています。
-                    特に、パフォーマンスの最適化、アクセシビリティの向上、そしてSEO対策に力を入れています。
-                  </p>
-
-                  <h2 className="text-lg font-bold text-gray-900 dark:text-white">アーキテクチャの詳細</h2>
-                  <p className="text-gray-700 dark:text-gray-300">
-                    アプリケーションのアーキテクチャは、マイクロサービスの概念を取り入れたモジュラー設計となっています。
-                    各機能は独立したコンポーネントとして実装され、テストが容易で、保守しやすい構造を実現しています。
-                  </p>
-
-                  <h2 className="text-lg font-bold text-gray-900 dark:text-white">データ管理戦略</h2>
-                  <p className="text-gray-700 dark:text-gray-300">
-                    データの管理については、ReactのContext APIとカスタムフックを組み合わせた状態管理システムを構築しています。
-                    これにより、グローバルな状態を効率的に管理し、コンポーネント間のデータ共有をスムーズに行うことができます。
-                  </p>
-
-                  <h2 className="text-lg font-bold text-gray-900 dark:text-white">パフォーマンス最適化</h2>
-                  <p className="text-gray-700 dark:text-gray-300">
-                    パフォーマンスの最適化においては、以下の手法を積極的に活用しています：
-                    コードスプリッティング、遅延読み込み、キャッシュ戦略の最適化、そしてバンドルサイズの最小化などです。
-                    これらの技術を組み合わせることで、ユーザーに快適なブラウジング体験を提供しています。
-                  </p>
-
-                  <h2 className="text-lg font-bold text-gray-900 dark:text-white">セキュリティ対策</h2>
-                  <p className="text-gray-700 dark:text-gray-300">
-                    セキュリティは現代のWebアプリケーションにおいて最も重要な要素の一つです。
-                    本プロジェクトでは、OWASPのWebアプリケーションセキュリティTop 10を参考に、包括的なセキュリティ対策を実装しています。
-                    これには、XSS攻撃の防止、CSRF攻撃の対策、SQLインジェクションの防止などが含まれます。
-                  </p>
-
-                  <h2 className="text-lg font-bold text-gray-900 dark:text-white">テスト戦略</h2>
-                  <p className="text-gray-700 dark:text-gray-300">
-                    品質の高いソフトウェアを提供するため、包括的なテスト戦略を採用しています。
-                    ユニットテスト、結合テスト、E2Eテストの3層構造でテストを実装し、
-                    高いコードカバレッジを維持しながら、継続的な品質改善を進めています。
-                  </p>
-
-                  <h2 className="text-lg font-bold text-gray-900 dark:text-white">デプロイメントと運用</h2>
-                  <p className="text-gray-700 dark:text-gray-300">
-                    デプロイメントには、DockerコンテナとKubernetesを活用したクラウドネイティブなアプローチを採用しています。
-                    CI/CDパイプラインを通じて、コードの品質チェックからデプロイまでの一連のプロセスを自動化し、
-                    迅速かつ信頼性の高いリリースを実現しています。
-                  </p>
-
-                  <h2 className="text-lg font-bold text-gray-900 dark:text-white">モニタリングとログ管理</h2>
-                  <p className="text-gray-700 dark:text-gray-300">
-                    アプリケーションの健全性とパフォーマンスを維持するため、包括的なモニタリングシステムを導入しています。
-                    Prometheus、Grafana、ELK Stackなどのツールを組み合わせ、リアルタイムのメトリクス収集と可視化を実現しています。
-                  </p>
-
-                  <h2 className="text-lg font-bold text-gray-900 dark:text-white">今後の展望</h2>
-                  <p className="text-gray-700 dark:text-gray-300">
-                    現在進行中の機能改善として、AIを活用したユーザーエクスペリエンスの向上、
-                    リアルタイムコラボレーション機能の強化、そしてモバイルアプリケーションの開発などを予定しています。
-                    これらの改善により、さらに使いやすく、効率的なプラットフォームへと発展させていく予定です。
-                  </p>
-
-                  <p className="text-gray-700 dark:text-gray-300">
-                    以上が本プロジェクトの概要となります。詳細な技術仕様や実装の詳細については、
-                    左側のソースコードをご参照ください。コードの中には、実装のポイントや注意事項がコメントとして記載されています。
-                  </p>
-                </div>
-
-                {/* 投稿メタ情報 */}
-                <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700 text-sm text-gray-500 dark:text-gray-400">
-                  <div className="space-y-2">
-                    <div>{formatRelativeDate(post.createdAt)}に投稿</div>
-                    <div>{post.views} 閲覧</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            </div>
-          )}
         </div>
       </div>
 

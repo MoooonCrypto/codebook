@@ -11,6 +11,7 @@ import { ThemeAwareLogo } from '@/app/components/ThemeAwareLogo';
 import { ThemeToggle } from '@/app/components/ThemeToggle';
 import { detectLanguage } from '@/lib/languageDetection';
 import { mockPosts } from '@/lib/mockData';
+import { fetchGitHubFile, fetchGist } from '@/lib/github';
 
 // 言語のプリセット
 const LANGUAGES = [
@@ -28,6 +29,10 @@ export default function CreatePost() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPreviewMode, setIsPreviewMode] = useState(false);
+  const [importTab, setImportTab] = useState<'editor' | 'github'>('editor');
+  const [githubUrl, setGithubUrl] = useState('');
+  const [isImporting, setIsImporting] = useState(false);
+  const [importError, setImportError] = useState('');
 
   const [formData, setFormData] = useState<CreatePost>({
     title: '',
@@ -95,6 +100,50 @@ export default function CreatePost() {
         ? prev.tags.filter(t => t !== tag)
         : [...prev.tags, tag]
     }));
+  };
+
+  // GitHubからインポート
+  const handleGitHubImport = async () => {
+    if (!githubUrl.trim()) {
+      setImportError('GitHub URLを入力してください');
+      return;
+    }
+
+    setIsImporting(true);
+    setImportError('');
+
+    try {
+      let result;
+
+      // Gist URLの場合
+      if (githubUrl.includes('gist.github.com')) {
+        const gistId = githubUrl.split('/').pop() || '';
+        result = await fetchGist(gistId);
+      }
+      // 通常のGitHubファイルURLの場合
+      else {
+        result = await fetchGitHubFile(githubUrl);
+      }
+
+      // フォームデータに反映
+      setFormData(prev => ({
+        ...prev,
+        sourceCode: {
+          filename: result.filename,
+          language: result.language,
+          code: result.content,
+        },
+        title: prev.title || result.filename, // タイトルが空なら自動設定
+      }));
+
+      // エディタタブに切り替え
+      setImportTab('editor');
+      setGithubUrl('');
+    } catch (error) {
+      setImportError(error instanceof Error ? error.message : 'インポートに失敗しました');
+    } finally {
+      setIsImporting(false);
+    }
   };
 
   // コード変更時に言語を自動識別
@@ -338,8 +387,93 @@ export default function CreatePost() {
                   ソースコード *
                 </label>
 
-                {/* ファイルアップロード */}
-                <div className="mb-4 p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg">
+                {/* タブ切り替え */}
+                <div className="flex gap-2 mb-4">
+                  <button
+                    type="button"
+                    onClick={() => setImportTab('editor')}
+                    className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
+                      importTab === 'editor'
+                        ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 border-b-2 border-blue-600'
+                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                    }`}
+                  >
+                    コード入力 / ファイルアップロード
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setImportTab('github')}
+                    className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
+                      importTab === 'github'
+                        ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 border-b-2 border-blue-600'
+                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                    }`}
+                  >
+                    GitHubからインポート
+                  </button>
+                </div>
+
+                {importTab === 'github' ? (
+                  /* GitHubインポート */
+                  <div className="mb-4 p-6 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700/50">
+                    <div className="flex items-start gap-3">
+                      <svg className="w-8 h-8 text-gray-700 dark:text-gray-300 flex-shrink-0 mt-1" fill="currentColor" viewBox="0 0 24 24">
+                        <path fillRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z" clipRule="evenodd" />
+                      </svg>
+                      <div className="flex-1">
+                        <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
+                          GitHubリポジトリ または Gist から取得
+                        </h4>
+                        <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
+                          GitHub上の個別ファイルのURLまたはGist URLを入力してください
+                        </p>
+                        <div className="space-y-3">
+                          <input
+                            type="text"
+                            value={githubUrl}
+                            onChange={(e) => setGithubUrl(e.target.value)}
+                            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded
+                                     bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100
+                                     focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="例: https://github.com/user/repo/blob/main/src/App.tsx"
+                          />
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              onClick={handleGitHubImport}
+                              disabled={isImporting || !githubUrl.trim()}
+                              className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              {isImporting ? 'インポート中...' : 'インポート'}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setGithubUrl('');
+                                setImportError('');
+                              }}
+                              className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                            >
+                              クリア
+                            </button>
+                          </div>
+                          {importError && (
+                            <p className="text-xs text-red-600 dark:text-red-400">{importError}</p>
+                          )}
+                          <div className="text-xs text-gray-500 dark:text-gray-400">
+                            <p className="font-medium mb-1">対応形式:</p>
+                            <ul className="list-disc list-inside space-y-1">
+                              <li>GitHubファイル: https://github.com/user/repo/blob/branch/path/file.ts</li>
+                              <li>Gist: https://gist.github.com/user/gist-id</li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  /* ファイルアップロード */
+                  <div className="mb-4 p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg">
                   <div className="text-center">
                     <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
@@ -380,7 +514,8 @@ export default function CreatePost() {
                       </p>
                     </div>
                   </div>
-                </div>
+                  </div>
+                )}
 
                 {/* コード入力エリア */}
                 <textarea
