@@ -251,10 +251,8 @@ const WrapIcon = ({ size = 16 }: { size?: number }) => (
     strokeLinecap="round"
     strokeLinejoin="round"
   >
-    <polyline points="4 7 4 4 20 4 20 7"></polyline>
-    <polyline points="9 20 4 20 4 11"></polyline>
-    <line x1="4" y1="7" x2="4" y2="11"></line>
-    <path d="M20 11v4a2 2 0 0 1-2 2H9l3-3"></path>
+    <path d="M3 7h12a4 4 0 0 1 0 8H3"></path>
+    <path d="M15 11l4 4-4 4"></path>
   </svg>
 );
 
@@ -269,9 +267,9 @@ const NoWrapIcon = ({ size = 16 }: { size?: number }) => (
     strokeLinecap="round"
     strokeLinejoin="round"
   >
-    <line x1="3" y1="6" x2="21" y2="6"></line>
-    <line x1="3" y1="12" x2="21" y2="12"></line>
-    <line x1="3" y1="18" x2="21" y2="18"></line>
+    <path d="M3 7h18"></path>
+    <path d="M3 12h18"></path>
+    <path d="M3 17h18"></path>
   </svg>
 );
 
@@ -281,15 +279,13 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
   const [loading, setLoading] = useState(true);
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
-  const [showFileList, setShowFileList] = useState(false);
   const [selectedFile, setSelectedFile] = useState(0);
   const [copySuccess, setCopySuccess] = useState(false);
-  const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [showImageModal, setShowImageModal] = useState(false);
   const [imageTargetFile, setImageTargetFile] = useState(0);
   const [imageBgColor, setImageBgColor] = useState('linear-gradient(135deg, #667eea 0%, #764ba2 100%)');
   const [wrapCode, setWrapCode] = useState(true); // 横スクロール切り替え
-  const [showReadme, setShowReadme] = useState(false); // READMEサイドパネル表示
+  const [showCodeOnMobile, setShowCodeOnMobile] = useState(true); // モバイル：コード/テキスト切り替え
 
   // 複数ファイル対応のためのサンプルデータ構造
   const mockFiles = post ? [
@@ -868,45 +864,45 @@ export default ApiClient;`,
         </div>
       </header>
 
-      {/* タイトルエリア - シンプル化（2行） */}
+      {/* タイトルエリア */}
       <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2">
-          {/* 1行目: タイトル */}
-          <h1 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white truncate mb-1">
-            {post.title}
-          </h1>
-
-          {/* 2行目: ユーザー名 & アクション */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 min-w-0">
-              <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate">
-                @{author.username}
-              </span>
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3">
+          <div className="flex items-start justify-between gap-4">
+            {/* 中央: タイトル */}
+            <div className="flex-1 text-center">
+              <h1 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white">
+                {post.title}
+              </h1>
             </div>
 
-            {/* いいね・ブックマーク */}
-            <div className="flex items-center space-x-2 flex-shrink-0">
-              <button
-                className={`flex items-center space-x-1 px-2 py-1 rounded text-xs transition-colors ${
-                  isLiked
-                    ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                }`}
-                onClick={() => setIsLiked(!isLiked)}
-              >
-                <HeartIcon size={14} filled={isLiked} />
-                <span>{post.likes}</span>
-              </button>
-              <button
-                className={`p-1 rounded transition-colors ${
-                  isBookmarked
-                    ? 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                }`}
-                onClick={() => setIsBookmarked(!isBookmarked)}
-              >
-                <BookmarkIcon size={14} filled={isBookmarked} />
-              </button>
+            {/* 右: ユーザー名 & アクション */}
+            <div className="flex flex-col items-end gap-1">
+              <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                @{author.username}
+              </span>
+              <div className="flex items-center space-x-2">
+                <button
+                  className={`flex items-center space-x-1 px-2 py-1 rounded text-xs transition-colors ${
+                    isLiked
+                      ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                  onClick={() => setIsLiked(!isLiked)}
+                >
+                  <HeartIcon size={14} filled={isLiked} />
+                  <span>{post.likes}</span>
+                </button>
+                <button
+                  className={`p-1 rounded transition-colors ${
+                    isBookmarked
+                      ? 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                  onClick={() => setIsBookmarked(!isBookmarked)}
+                >
+                  <BookmarkIcon size={14} filled={isBookmarked} />
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -938,75 +934,68 @@ export default ApiClient;`,
       </div>
 
       {/* メインコンテンツエリア */}
-      <div className="flex-1 flex overflow-hidden relative main-content">
-        {/* 左サイドバー: コントロールボタン */}
-        <div className="flex flex-col gap-2 p-2 bg-gray-100 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
-          <button
-            className={`p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors ${
-              showFileList ? 'bg-gray-200 dark:bg-gray-700' : ''
-            }`}
-            onClick={() => {
-              setShowFileList(!showFileList);
-              setActiveMenu(showFileList ? null : 'files');
-            }}
-            title="ファイル一覧"
-          >
-            <FolderIcon size={18} />
-          </button>
-          <button
-            className={`p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors ${
-              showReadme ? 'bg-gray-200 dark:bg-gray-700' : ''
-            }`}
-            onClick={() => setShowReadme(!showReadme)}
-            title="説明を表示"
-          >
-            <TextIcon size={18} />
-          </button>
+      <div className="flex-1 flex relative main-content">
+        {/* 左: ファイル一覧（常時表示、固定） */}
+        <div className="w-48 sm:w-56 bg-gray-800 dark:bg-gray-950 border-r border-gray-700 flex-shrink-0 overflow-y-auto fixed left-0 top-[104px] bottom-0 sm:top-[124px]">
+          <div className="p-3 border-b border-gray-700">
+            <span className="text-xs sm:text-sm font-medium text-gray-300">ファイル</span>
+          </div>
+          <div className="p-2 space-y-1">
+            {mockFiles.map((file, index) => (
+              <button
+                key={index}
+                className={`w-full flex items-center space-x-2 px-2 py-1.5 text-left text-xs sm:text-sm rounded transition-colors ${
+                  selectedFile === index
+                    ? 'bg-blue-600 text-white font-medium'
+                    : 'text-gray-300 hover:bg-gray-700 hover:text-gray-100'
+                }`}
+                onClick={() => setSelectedFile(index)}
+              >
+                <FileIcon size={12} />
+                <span className="truncate">{file.name}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* ソースコード表示エリア */}
-        <div className="flex-1 flex bg-gray-50 dark:bg-gray-900 overflow-auto relative">
-          <div className="w-full max-w-6xl mx-auto flex flex-col relative px-3 sm:px-6 lg:px-8">
-            {/* ファイル一覧オーバーレイ */}
-            {showFileList && activeMenu === 'files' && (
-              <div className="absolute top-0 left-0 bottom-0 w-64 bg-gray-800 dark:bg-gray-900 border-r border-white/20 dark:border-gray-600 z-10 shadow-lg">
-                <div className="flex items-center justify-between p-3 border-b border-white/10 dark:border-gray-600 bg-gray-900 dark:bg-gray-950">
-                  <span className="text-sm font-medium text-gray-200 dark:text-gray-300">ソースファイル</span>
-                  <button
-                    className="p-1 text-gray-400 dark:text-gray-500 hover:text-gray-200 dark:hover:text-gray-300 hover:bg-gray-700 dark:hover:bg-gray-800 rounded transition-colors"
-                    onClick={() => {
-                      setShowFileList(false);
-                      setActiveMenu(null);
-                    }}
-                  >
-                    <ChevronLeftIcon size={14} />
-                  </button>
-                </div>
-                <div className="p-2 space-y-1">
-                  {mockFiles.map((file, index) => (
-                    <button
-                      key={index}
-                      className={`w-full flex items-center space-x-2 px-3 py-2 text-left text-sm rounded transition-colors ${
-                        selectedFile === index
-                          ? 'bg-blue-600 dark:bg-blue-700 text-blue-100 font-medium'
-                          : 'text-gray-300 dark:text-gray-400 hover:bg-gray-700 dark:hover:bg-gray-800 hover:text-gray-100 dark:hover:text-gray-200'
-                      }`}
-                      onClick={() => {
-                        setSelectedFile(index);
-                        setShowFileList(false);
-                        setActiveMenu(null);
-                      }}
-                    >
-                      <FileIcon size={12} />
-                      <span className="truncate">{file.name}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
+        {/* 中央: コード表示エリア（モバイルでコード/テキスト切り替え） */}
+        <div className="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900 overflow-auto relative ml-48 sm:ml-56 mr-0 md:mr-80 lg:mr-96">
+          {/* モバイル: 切り替えボタン */}
+          <div className="md:hidden sticky top-0 z-10 bg-gray-200 dark:bg-gray-800 p-2 flex gap-2">
+            <button
+              className={`flex-1 px-3 py-2 text-sm rounded transition-colors ${
+                showCodeOnMobile
+                  ? 'bg-blue-600 text-white font-medium'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+              }`}
+              onClick={() => setShowCodeOnMobile(true)}
+            >
+              コード
+            </button>
+            <button
+              className={`flex-1 px-3 py-2 text-sm rounded transition-colors ${
+                !showCodeOnMobile
+                  ? 'bg-blue-600 text-white font-medium'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+              }`}
+              onClick={() => setShowCodeOnMobile(false)}
+            >
+              説明
+            </button>
+          </div>
 
-            {/* コードヘッダー */}
-            <div className="flex items-center justify-between px-3 sm:px-4 py-2 bg-[#2d2d2d] flex-shrink-0 rounded-t-lg mt-4">
+          {/* コード表示（モバイル：切り替え、PC：常時表示） */}
+          <div className={`flex-1 px-3 sm:px-6 lg:px-8 py-4 ${!showCodeOnMobile ? 'hidden' : ''} md:block`}>
+            <div className="w-full md:w-2/3 mx-auto flex flex-col relative">
+              {/* コピーポップアップ */}
+              {copySuccess && (
+                <div className="absolute top-16 left-1/2 -translate-x-1/2 z-50 bg-gray-900 dark:bg-gray-700 text-white px-3 py-1.5 rounded shadow-lg text-xs font-medium">
+                  Copied!
+                </div>
+              )}
+
+              {/* コードヘッダー */}
+              <div className="flex items-center justify-between px-3 sm:px-4 py-2 bg-[#2d2d2d] flex-shrink-0 rounded-t-lg">
               <div className="flex items-center space-x-2">
                 <span className="text-xs sm:text-sm font-medium text-gray-300">
                   {mockFiles[selectedFile]?.name}
@@ -1024,13 +1013,9 @@ export default ApiClient;`,
                   {wrapCode ? <NoWrapIcon size={14} /> : <WrapIcon size={14} />}
                 </button>
                 <button
-                  className={`p-1.5 sm:p-2 rounded transition-colors ${
-                    copySuccess
-                      ? 'bg-green-600 text-white'
-                      : 'bg-[#3e3e3e] hover:bg-[#4e4e4e] text-gray-300'
-                  }`}
+                  className="p-1.5 sm:p-2 bg-[#3e3e3e] hover:bg-[#4e4e4e] text-gray-300 rounded transition-colors"
                   onClick={handleCopyCode}
-                  title={copySuccess ? 'コピー済み' : 'コードをコピー'}
+                  title="コードをコピー"
                 >
                   <CopyIcon size={14} />
                 </button>
@@ -1072,23 +1057,14 @@ export default ApiClient;`,
                 {mockFiles[selectedFile]?.code || ''}
               </SyntaxHighlighter>
             </div>
+            </div>
           </div>
 
-          {/* READMEサイドパネル */}
-          {showReadme && (
-            <div className="absolute top-0 right-0 bottom-0 w-80 sm:w-96 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 z-20 shadow-xl overflow-auto">
-              <div className="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 p-4 flex items-center justify-between">
-                <h2 className="text-lg font-bold text-gray-900 dark:text-white">説明</h2>
-                <button
-                  onClick={() => setShowReadme(false)}
-                  className="p-1 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-              <div className="p-6">
+          {/* モバイル: 説明表示エリア（切り替え） */}
+          <div className={`flex-1 px-3 sm:px-6 lg:px-8 py-4 ${showCodeOnMobile ? 'hidden' : ''} md:hidden`}>
+            <div className="w-full mx-auto">
+              <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">説明</h2>
                 <div className="prose prose-sm max-w-none dark:prose-invert">
                   <div className="text-gray-700 dark:text-gray-300 leading-relaxed space-y-4">
                     {post.content.split('\n\n').map((paragraph, index) => {
@@ -1128,7 +1104,53 @@ export default ApiClient;`,
                 </div>
               </div>
             </div>
-          )}
+          </div>
+
+          {/* PC: READMEサイドパネル（常時表示、固定） */}
+          <div className="hidden md:block fixed top-[104px] sm:top-[124px] right-0 bottom-0 w-80 lg:w-96 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 z-20 shadow-xl overflow-y-auto">
+            <div className="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 p-4">
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">説明</h2>
+            </div>
+            <div className="p-6">
+              <div className="prose prose-sm max-w-none dark:prose-invert">
+                <div className="text-gray-700 dark:text-gray-300 leading-relaxed space-y-4">
+                  {post.content.split('\n\n').map((paragraph, index) => {
+                    if (paragraph.startsWith('#')) {
+                      const level = paragraph.match(/^#+/)?.[0].length || 1;
+                      const text = paragraph.replace(/^#+\s*/, '');
+                      const HeadingTag = `h${Math.min(level, 6)}` as keyof React.JSX.IntrinsicElements;
+                      return (
+                        <HeadingTag
+                          key={index}
+                          className={`font-bold text-gray-900 dark:text-white ${
+                            level === 1 ? 'text-xl' : level === 2 ? 'text-lg' : 'text-base'
+                          }`}
+                        >
+                          {text}
+                        </HeadingTag>
+                      );
+                    }
+                    if (paragraph.startsWith('```')) {
+                      const codeBlock = paragraph.replace(/```[\w]*\n?|\n?```/g, '');
+                      return (
+                        <pre key={index} className="bg-gray-100 dark:bg-gray-800 p-3 rounded text-sm overflow-x-auto">
+                          <code className="text-gray-800 dark:text-gray-200">{codeBlock}</code>
+                        </pre>
+                      );
+                    }
+                    if (paragraph.trim()) {
+                      return (
+                        <p key={index} className="text-gray-700 dark:text-gray-300">
+                          {paragraph}
+                        </p>
+                      );
+                    }
+                    return null;
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
