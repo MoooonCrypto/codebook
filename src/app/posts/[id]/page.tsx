@@ -289,6 +289,7 @@ export default function PostDetailPage({ params }: { params: Promise<{ id: strin
   const [imageTargetFile, setImageTargetFile] = useState(0);
   const [imageBgColor, setImageBgColor] = useState('linear-gradient(135deg, #667eea 0%, #764ba2 100%)');
   const [wrapCode, setWrapCode] = useState(true); // 横スクロール切り替え
+  const [showReadme, setShowReadme] = useState(false); // READMEサイドパネル表示
 
   // 複数ファイル対応のためのサンプルデータ構造
   const mockFiles = post ? [
@@ -867,147 +868,104 @@ export default ApiClient;`,
         </div>
       </header>
 
-      {/* タイトルエリア */}
+      {/* タイトルエリア - シンプル化（2行） */}
       <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-4">
-          {/* タイトルと設定タグ */}
-          <div className="mb-3">
-            <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              {post.title}
-            </h1>
-            <div className="flex flex-wrap gap-1.5 sm:gap-2">
-              {post.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-xs font-medium"
-                >
-                  #{tag}
-                </span>
-              ))}
-            </div>
-          </div>
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2">
+          {/* 1行目: タイトル */}
+          <h1 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white truncate mb-1">
+            {post.title}
+          </h1>
 
-          {/* 投稿者プロフ情報とアクション */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div className="flex items-center space-x-2">
-              <Image
-                src={author.avatar}
-                alt={author.displayName}
-                width={32}
-                height={32}
-                className="rounded-full flex-shrink-0"
-                unoptimized
-              />
-              <div className="min-w-0">
-                <div className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                  {author.displayName}
-                </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 truncate">@{author.username}</div>
-              </div>
+          {/* 2行目: ユーザー名 & アクション */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate">
+                @{author.username}
+              </span>
             </div>
 
             {/* いいね・ブックマーク */}
             <div className="flex items-center space-x-2 flex-shrink-0">
-                <button
-                  className={`flex items-center space-x-1 px-2 py-1 rounded text-xs transition-colors ${
-                    isLiked
-                      ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                  onClick={() => setIsLiked(!isLiked)}
-                >
-                  <HeartIcon size={14} filled={isLiked} />
-                  <span>{post.likes}</span>
-                </button>
-                <button
-                  className={`p-1 rounded transition-colors ${
-                    isBookmarked
-                      ? 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                  onClick={() => setIsBookmarked(!isBookmarked)}
-                >
-                  <BookmarkIcon size={14} filled={isBookmarked} />
-                </button>
-              </div>
+              <button
+                className={`flex items-center space-x-1 px-2 py-1 rounded text-xs transition-colors ${
+                  isLiked
+                    ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
+                onClick={() => setIsLiked(!isLiked)}
+              >
+                <HeartIcon size={14} filled={isLiked} />
+                <span>{post.likes}</span>
+              </button>
+              <button
+                className={`p-1 rounded transition-colors ${
+                  isBookmarked
+                    ? 'bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
+                onClick={() => setIsBookmarked(!isBookmarked)}
+              >
+                <BookmarkIcon size={14} filled={isBookmarked} />
+              </button>
             </div>
           </div>
         </div>
+      </div>
+
+      {/* SNS共有ボタン - 上部固定 */}
+      <div className="fixed top-20 right-4 z-40 flex flex-col gap-2 bg-white dark:bg-gray-800 p-2 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
+        <button
+          className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-[#00a4de]"
+          onClick={handleShareTwitter}
+          title="Xで共有"
+        >
+          <TwitterIcon size={18} />
+        </button>
+        <button
+          className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-[#1877f2]"
+          onClick={handleShareFacebook}
+          title="Facebookで共有"
+        >
+          <FacebookIcon size={18} />
+        </button>
+        <button
+          className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-[#00a4de]"
+          onClick={handleShareHatena}
+          title="はてなブックマークで共有"
+        >
+          <HatenaIcon size={18} />
+        </button>
+      </div>
 
       {/* メインコンテンツエリア */}
-      <div className="flex-1 flex flex-col overflow-hidden relative main-content">
-        {/* README エリア - 上部1/3固定 */}
-        <div className="h-[33vh] bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 overflow-auto flex-shrink-0">
-          <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">説明</h2>
-              {/* SNS共有ボタン - モバイルも表示 */}
-              <div className="flex items-center gap-2">
-                <button
-                  className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-[#00a4de]"
-                  onClick={handleShareTwitter}
-                  title="Xで共有"
-                >
-                  <TwitterIcon size={16} />
-                </button>
-                <button
-                  className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-[#1877f2]"
-                  onClick={handleShareFacebook}
-                  title="Facebookで共有"
-                >
-                  <FacebookIcon size={16} />
-                </button>
-                <button
-                  className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-[#00a4de]"
-                  onClick={handleShareHatena}
-                  title="はてなブックマークで共有"
-                >
-                  <HatenaIcon size={16} />
-                </button>
-              </div>
-            </div>
-            <div className="prose prose-sm max-w-none dark:prose-invert">
-              <div className="text-gray-700 dark:text-gray-300 leading-relaxed space-y-4">
-                {post.content.split('\n\n').map((paragraph, index) => {
-                  if (paragraph.startsWith('#')) {
-                    const level = paragraph.match(/^#+/)?.[0].length || 1;
-                    const text = paragraph.replace(/^#+\s*/, '');
-                    const HeadingTag = `h${Math.min(level, 6)}` as keyof React.JSX.IntrinsicElements;
-                    return (
-                      <HeadingTag
-                        key={index}
-                        className={`font-bold text-gray-900 dark:text-white ${
-                          level === 1 ? 'text-xl' : level === 2 ? 'text-lg' : 'text-base'
-                        }`}
-                      >
-                        {text}
-                      </HeadingTag>
-                    );
-                  }
-                  if (paragraph.startsWith('```')) {
-                    const codeBlock = paragraph.replace(/```[\w]*\n?|\n?```/g, '');
-                    return (
-                      <pre key={index} className="bg-gray-100 dark:bg-gray-800 p-3 rounded text-sm overflow-x-auto">
-                        <code className="text-gray-800 dark:text-gray-200">{codeBlock}</code>
-                      </pre>
-                    );
-                  }
-                  if (paragraph.trim()) {
-                    return (
-                      <p key={index} className="text-gray-700 dark:text-gray-300">
-                        {paragraph}
-                      </p>
-                    );
-                  }
-                  return null;
-                })}
-              </div>
-            </div>
-          </div>
+      <div className="flex-1 flex overflow-hidden relative main-content">
+        {/* 左サイドバー: コントロールボタン */}
+        <div className="flex flex-col gap-2 p-2 bg-gray-100 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
+          <button
+            className={`p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors ${
+              showFileList ? 'bg-gray-200 dark:bg-gray-700' : ''
+            }`}
+            onClick={() => {
+              setShowFileList(!showFileList);
+              setActiveMenu(showFileList ? null : 'files');
+            }}
+            title="ファイル一覧"
+          >
+            <FolderIcon size={18} />
+          </button>
+          <button
+            className={`p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors ${
+              showReadme ? 'bg-gray-200 dark:bg-gray-700' : ''
+            }`}
+            onClick={() => setShowReadme(!showReadme)}
+            title="説明を表示"
+          >
+            <TextIcon size={18} />
+          </button>
         </div>
 
         {/* ソースコード表示エリア */}
-        <div className="flex-1 flex bg-gray-50 dark:bg-gray-900 overflow-auto">
+        <div className="flex-1 flex bg-gray-50 dark:bg-gray-900 overflow-auto relative">
           <div className="w-full max-w-6xl mx-auto flex flex-col relative px-3 sm:px-6 lg:px-8">
             {/* ファイル一覧オーバーレイ */}
             {showFileList && activeMenu === 'files' && (
@@ -1113,6 +1071,101 @@ export default ApiClient;`,
               >
                 {mockFiles[selectedFile]?.code || ''}
               </SyntaxHighlighter>
+            </div>
+          </div>
+
+          {/* READMEサイドパネル */}
+          {showReadme && (
+            <div className="absolute top-0 right-0 bottom-0 w-80 sm:w-96 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 z-20 shadow-xl overflow-auto">
+              <div className="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 p-4 flex items-center justify-between">
+                <h2 className="text-lg font-bold text-gray-900 dark:text-white">説明</h2>
+                <button
+                  onClick={() => setShowReadme(false)}
+                  className="p-1 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div className="p-6">
+                <div className="prose prose-sm max-w-none dark:prose-invert">
+                  <div className="text-gray-700 dark:text-gray-300 leading-relaxed space-y-4">
+                    {post.content.split('\n\n').map((paragraph, index) => {
+                      if (paragraph.startsWith('#')) {
+                        const level = paragraph.match(/^#+/)?.[0].length || 1;
+                        const text = paragraph.replace(/^#+\s*/, '');
+                        const HeadingTag = `h${Math.min(level, 6)}` as keyof React.JSX.IntrinsicElements;
+                        return (
+                          <HeadingTag
+                            key={index}
+                            className={`font-bold text-gray-900 dark:text-white ${
+                              level === 1 ? 'text-xl' : level === 2 ? 'text-lg' : 'text-base'
+                            }`}
+                          >
+                            {text}
+                          </HeadingTag>
+                        );
+                      }
+                      if (paragraph.startsWith('```')) {
+                        const codeBlock = paragraph.replace(/```[\w]*\n?|\n?```/g, '');
+                        return (
+                          <pre key={index} className="bg-gray-100 dark:bg-gray-800 p-3 rounded text-sm overflow-x-auto">
+                            <code className="text-gray-800 dark:text-gray-200">{codeBlock}</code>
+                          </pre>
+                        );
+                      }
+                      if (paragraph.trim()) {
+                        return (
+                          <p key={index} className="text-gray-700 dark:text-gray-300">
+                            {paragraph}
+                          </p>
+                        );
+                      }
+                      return null;
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* 画面下部: ユーザー情報とタグ */}
+      <div className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
+        <div className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            {/* ユーザー情報 */}
+            <div className="flex items-center space-x-3">
+              <Image
+                src={author.avatar}
+                alt={author.displayName}
+                width={48}
+                height={48}
+                className="rounded-full flex-shrink-0"
+                unoptimized
+              />
+              <div>
+                <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                  {author.displayName}
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">
+                  @{author.username}
+                </div>
+              </div>
+            </div>
+
+            {/* タグ */}
+            <div className="flex flex-wrap gap-2">
+              {post.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-xs font-medium"
+                >
+                  #{tag}
+                </span>
+              ))}
             </div>
           </div>
         </div>
